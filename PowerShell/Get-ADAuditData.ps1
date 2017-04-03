@@ -12,6 +12,91 @@ function New-ZipFile {
     [System.IO.Compression.ZipFile]::CreateFromDirectory($sourcedir,$zipfilename, $compressionLevel, $false)
 }
 
+function ConvertFrom-UAC {
+    param (
+        [Parameter(Mandatory=$True, Position=0, ValueFromPipeline=$true)]
+        $Value
+    )
+    $uacOptions = @{
+        512     = 'Enabled'
+        514     = 'Disabled'
+        528     = 'Enabled - Locked Out'
+        530     = 'Disabled - Locked Out'
+        544     = 'Enabled - Password Not Required'
+        546     = 'Disabled - Password Not Required'
+        560     = 'Enabled - Password Not Required - Locked Out'
+        640     = 'Enabled - Encrypted Text Password Allowed'
+        2048    = 'Enabled - Interdomain Trust Account'
+        2050    = 'Disabled - Interdomain Trust Account'
+        2080    = 'Enabled - Interdomain Trust Account - Password Not Required'
+        2082    = 'Disabled - Interdomain Trust Account - Password Not Required'
+        4128    = 'Enabled - Workstation Trust Account - Password Not Required'
+        4130    = 'Disabled - Workstation Trust Account - Password Not Required'
+        4096    = 'Enabled - Workstation Trust Account'
+        4098    = 'Disabled - Workstation Trust Account'
+        8192    = 'Enabled - Server Trust Account'
+        8194    = 'Disabled - Server Trust Account'
+        66048   = 'Enabled - Password Does Not Expire'
+        66050   = 'Disabled - Password Does Not Expire'
+        66056   = 'Enabled - Password Does Not Expire - HomeDir Required'
+        66064   = 'Enabled - Password Does Not Expire - Locked Out'
+        66066   = 'Disabled - Password Does Not Expire - Locked Out'
+        66080   = 'Enabled - Password Does Not Expire - Password Not Required'
+        66082   = 'Disabled - Password Does Not Expire - Password Not Required'
+        66176   = 'Enabled - Password Does Not Expire - Encrypted Text Password Allowed'
+        69632   = 'Enabled - Workstation Trust Account - Dont Expire Password'
+        131584  = 'Enabled - Majority Node Set (MNS) Account'
+        131586  = 'Disabled - Majority Node Set (MNS) Account'
+        131600  = 'Enabled - Majority Node Set (MNS) Account - Locked Out'
+        197120  = 'Enabled - Majority Note Set (MNS) Account - Password Does Not Expire'
+        532480  = 'Server Trust Account - Trusted For Delegation (Domain Controller)'
+        590336  = 'Enabled - Password Does Not Expire - Trusted For Delegation'
+        590338  = 'Disabled - Password Does Not Expire - Trusted For Delegation'
+        1049088 = 'Enabled - Not Delegated'
+        1049090 = 'Disabled - Not Delegated'
+        2097664 = 'Enabled - Use DES Key Only'
+        2163200 = 'Enabled - Password Does Not Expire - Use DES Key Only'
+        2687488 = 'Enabled - Password Does Not Expire - Trusted For Delegation - Use DES Key Only'
+        4194816 = 'Enabled - PreAuthorization Not Required'
+        4260352 = 'Enabled - Password Does Not Expire - PreAuthorization Not Required'
+        1114624 = 'Enabled - Password Does Not Expire - Not Delegated'
+        1114656 = 'Enabled - Password Not Required - Password Does Not Expire - Not Delegated'
+        3211776 = 'Enabled - Password Does Not Expire - Not Delegated - Use DES Key Only'
+    }
+
+    if ($uacOptions.ContainsKey($Value)) {
+        $newValue = $uacOptions[$Value]
+    }
+    else {
+        $newValue = 'Unknown User Account Type'
+    }
+    return $newValue
+}
+
+function ConvertFrom-UACComputed {
+    param(
+        [Parameter(Mandatory=$True, Position=0, ValueFromPipeline=$true)]
+        $Value
+    )
+    $uacComputed = @{
+        0          = 'Refer to userAccountControl Field'
+        16         = 'Locked Out'
+        8388608    = 'Password Expired'
+        8388624    = 'Locked Out - Password Expired'
+        67108864   = 'Partial Secrets Account'
+        2147483648 = 'Use AES Keys'
+    }
+
+    if ($uacComputed.ContainsKey($Value)) {
+        $newValue = $uacComputed[$Value]
+    }
+    else {
+        $newValue = 'Unknown User Account Type'
+    }
+    return $newValue
+}
+
+
 function Get-ADAuditData {
     <#
     .SYNOPSIS
@@ -61,30 +146,27 @@ function Get-ADAuditData {
     $domain = (Get-ADDomain -Current LocalComputer).DistinguishedName
 
     Write-Verbose -Message 'Creating Output Directory'
+    if (Test-Path -Path "$Path\$domain") {
+        Remove-Item "$Path\$domain" -Recurse -Force
+    }
     New-Item -Path "$Path\$domain" -ItemType Directory | Out-Null
     Write-Verbose -Message 'Output Directory Created'
 
-
-
-    # Add User Account Control Lookup table
-
-
-    # Add msDS-User-Account-Control-Computed Lookup Table
-
-
-
-
     Write-Verbose -Message 'Exporting Active Directory Users'
     Get-ADUser -Filter * -Properties 'msDS-ResultantPSO','msDS-User-Account-Control-Computed','msDS-UserPasswordExpiryTimeComputed',* |
-        Select-Object -ExcludeProperty memberOf,'msDS-UserPasswordExpiryTimeComputed' *,@{Name="memberOf";Expression={(($_.memberof -split (",") |
-        Select-String -AllMatches "CN=") -join ", ") -replace "CN=" -replace "" }},@{Name='PasswordExpirationDate';Expression={([datetime]::FromFileTime($_.'msDS-UserPasswordExpiryTimeComputed')).ToString("M/d/yyyy h:mm:ss tt")}} |
+        Select-Object -ExcludeProperty memberOf,'msDS-UserPasswordExpiryTimeComputed',userAccountControl,'msDS-User-Account-Control-Computed' *,
+            @{Name="memberOf";Expression={(($_.memberof -split (",") | Select-String -AllMatches "CN=") -join ", ") -replace "CN=" -replace "" }},
+            @{Name='PasswordExpirationDate';Expression={([datetime]::FromFileTime($_.'msDS-UserPasswordExpiryTimeComputed')).ToString("M/d/yyyy h:mm:ss tt")}},
+            @{Name='userAccountControl';Expression={(ConvertFrom-UAC($_.userAccountControl))}},
+            @{Name='userAccountControlComputed';Expression={(ConvertFrom-UACComputed($_.'msDS-User-Account-Control-Computed'))}} |
         Export-Csv -Path "$Path\$domain\$domain-Users.csv" -NoTypeInformation -Delimiter '|'
     Write-Verbose -Message 'Active Directory Users Exported'
 
     Write-Verbose -Message 'Exporting Active Directory Groups'
     Get-ADGroup -Filter * -Properties 'distinguishedName','sAMAccountName','CN','displayName','name','description','groupType','ManagedBy', 'memberOf','objectSID','msDS-PSOApplied','whenCreated','whenChanged' |
-        Select-Object 'distinguishedName','sAMAccountName','CN','displayName','name','description','ManagedBy',@{Name="memberOf";Expression={(($_.memberof -split (",") |
-        Select-String -AllMatches "CN=") -join ", ") -replace "CN=" -replace "" }},'msDS-PSOApplied','whenCreated','whenChanged' |
+        Select-Object 'distinguishedName','sAMAccountName','CN','displayName','name','description','ManagedBy',
+            @{Name="memberOf";Expression={(($_.memberof -split (",") | Select-String -AllMatches "CN=") -join ", ") -replace "CN=" -replace "" }},
+            'msDS-PSOApplied','whenCreated','whenChanged' |
         Export-Csv -Path "$Path\$domain\$domain-Groups.csv" -NoTypeInformation -Delimiter '|'
     Write-Verbose -Message 'Active Directory Groups Exported'
 
