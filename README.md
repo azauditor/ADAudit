@@ -2,7 +2,7 @@
 
 The scripts on this page are designed to query Active Directory to extract data for audit-related purposes. These scripts were designed by the State of Arizona Office of the Auditor General's IT Audit team for internal purposes, but have been released to assist similar government audit shops in Active Directory work.
 
-The scripts on this page were compiled by the Alex Entringer from the work and research of others. I wish thank the communities around Active Directory, Windows, Python, and PowerShell for making content readily and freely accessible for the benefit of others.
+The scripts on this page were compiled by the Alex Entringer from the work and research of others. I wish to thank the communities around Active Directory, Windows, Python, and PowerShell for making content readily and freely accessible for the benefit of others.
 
 ## Intention
 
