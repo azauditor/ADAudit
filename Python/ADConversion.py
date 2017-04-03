@@ -1,4 +1,3 @@
-# ADConversion (alias 'ad')
 # Title: ADConversion.py
 # Purpose: Convert values from csvde output from Active Directory
 
