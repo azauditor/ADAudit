@@ -159,7 +159,7 @@ function Get-ADAuditData {
             @{Name='PasswordExpirationDate';Expression={([datetime]::FromFileTime($_.'msDS-UserPasswordExpiryTimeComputed')).ToString("M/d/yyyy h:mm:ss tt")}},
             @{Name='userAccountControl';Expression={(ConvertFrom-UAC($_.userAccountControl))}},
             @{Name='userAccountControlComputed';Expression={(ConvertFrom-UACComputed($_.'msDS-User-Account-Control-Computed'))}} |
-        Export-Csv -Path "$Path\$domain\$domain-Users.csv" -NoTypeInformation -Delimiter '|'
+        Export-Csv -Path "$Path\$domain\$domain-Users.csv" -NoTypeInformation -Delimiter '|' -Append
     Write-Verbose -Message 'Active Directory Users Exported'
 
     Write-Verbose -Message 'Exporting Active Directory Groups'
@@ -167,16 +167,16 @@ function Get-ADAuditData {
         Select-Object 'distinguishedName','sAMAccountName','CN','displayName','name','description','ManagedBy',
             @{Name="memberOf";Expression={(($_.memberof -split (",") | Select-String -AllMatches "CN=") -join ", ") -replace "CN=" -replace "" }},
             'msDS-PSOApplied','whenCreated','whenChanged' |
-        Export-Csv -Path "$Path\$domain\$domain-Groups.csv" -NoTypeInformation -Delimiter '|'
+        Export-Csv -Path "$Path\$domain\$domain-Groups.csv" -NoTypeInformation -Delimiter '|' -Append
     Write-Verbose -Message 'Active Directory Groups Exported'
 
     Write-Verbose -Message 'Exporting Active Directory Organizational Units'
     Get-ADOrganizationalUnit -Filter * -Properties 'distinguishedName','name','CanonicalName','DisplayName','description','whenCreated','whenChanged','ManagedBy' |
-        Export-Csv -Path "$Path\$domain\$domain-OUs.csv" -NoTypeInformation -Delimiter '|'
+        Export-Csv -Path "$Path\$domain\$domain-OUs.csv" -NoTypeInformation -Delimiter '|' -Append
     Write-Verbose -Message 'Active Directory OUs Exported'
 
     Write-Verbose -Message 'Exporting Active Directory Computers'
-    Get-ADComputer -Properties * | Export-Csv -Path "$Path\$domain\$domain-Computers.csv" -NoTypeInformation -Delimiter '|'
+    Get-ADComputer -Properties * | Export-Csv -Path "$Path\$domain\$domain-Computers.csv" -NoTypeInformation -Delimiter '|' -Append
     Write-Verbose -Message 'Active Directory Computers Exported'
 
     Write-Verbose -Message 'Exporting Active Directory Group Policy Objects'
@@ -235,22 +235,23 @@ function Get-ADAuditData {
             Select-Object @{name='organizationalUnit';expression={$OU}}, `
                    @{name='objectTypeName';expression={if ($_.objectType.ToString() -eq '00000000-0000-0000-0000-000000000000') {'All'} Else {$schemaIDGUID.Item($_.objectType)}}}, `
                    @{name='inheritedObjectTypeName';expression={$schemaIDGUID.Item($_.inheritedObjectType)}}, `
-                   * | Export-Csv -Path "$Path\$domain\OU\ACLs\$OU" -NoTypeInformation -Delimiter '|'
+                   * | Export-Csv -Path "$Path\$domain\OU\ACLs\$OU" -NoTypeInformation -Delimiter '|' -Append
     }
     Write-Verbose -Message 'Active Directory Organizational Unit Access Control Lists Exported'
 
     Write-Verbose -Message 'Exporting Active Directory Confidentiality Bit Details'
-    Get-ADObject -Partition "CN=Schema,CN=Configuration,$domain" -LDAPFilter '(searchFlags:1.2.840.113556.1.4.803:=128)' |
-        Export-Csv -Path "$Path\$domain\$domain-confidentialBit.csv" -NoTypeInformation -Delimiter '|'
+    Get-ADObject -SearchBase "CN=Schema,CN=Configuration,$domain" -LDAPFilter '(searchFlags:1.2.840.113556.1.4.803:=128)' |
+        Export-Csv -Path "$Path\$domain\$domain-confidentialBit.csv" -NoTypeInformation -Delimiter '|' -Append
     Write-Verbose -Message 'Active Directory Confidential Bit Details Exported'
 
     Write-Verbose -Message 'Exporting Active Directory Fine Grained Password Policies'
-    Get-ADObject -Partition "CN=Password Settings Container,CN=System,$domain" |
-        Export-Csv -Path "$Path\$domain\$domain-fgppDetails.csv" -NoTypeInformation -Delimiter '|'
+    Get-ADFineGrainedPasswordPolicy -Filter * | Select-Object -ExcludeProperty AppliesTo *,
+        @{Name="memberOf";Expression={(($_.memberof -split (",") | Select-String -AllMatches "CN=") -join ", ") -replace "CN=" -replace "" }} |
+        Export-Csv -Path "$Path\$domain\$domain-fgppDetails.csv" -NoTypeInformation -Delimiter '|' -Append
     Write-Verbose -Message 'Active Directory Fine Grained Password Policies Exported'
 
     Write-Verbose -Message 'Exporting Active Directory Domain Trusts'
-    Get-ADTrust -Filter * | Export-Csv -Path "$Path\$domain\$domain-trustedDomains.csv" -NoTypeInformation -Delimiter '|'
+    Get-ADTrust -Filter * | Export-Csv -Path "$Path\$domain\$domain-trustedDomains.csv" -NoTypeInformation -Delimiter '|' -Append
     Write-Verbose -Message 'Active Directory Domain Trusts Exported'
 
     Write-Verbose -Message 'Compressing Output Data to Zip File'
