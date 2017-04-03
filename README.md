@@ -14,7 +14,7 @@ These script files were born out of a need to automate and standardize audit wor
 >We do have a work-in-progress version available in the PowerShell folder, but this should **not** be considered ready for production.
 >>
 >> ### MAINTAINABILITY
->> These scripts were developed originally by Alex Entringer for the use of the Arizona Auditor General's IT Audit team. While the Batch scripts are robust and stable, Alex Entringer is no longer in an audit role and does not use these on regular basis. Though the Arizona Auditor General's audit teams do still use these scripts, these scripts should be considered deprecated and alternative solutions (**PowerShell**) should be investigated. Changes to the Batch version of the scripts can be requested, and changes/updates will be made as soon as possible, but updates may be slow to never, particularly if the PowerShell version completed.
+>> These scripts were developed originally by Alex Entringer for the use of the Arizona Auditor General's IT Audit team. While the Batch scripts are robust and stable, Alex Entringer is no longer in an audit role and does not use these on regular basis. Though the Arizona Auditor General's audit teams do still use these scripts, these scripts should be considered deprecated and alternative solutions (**PowerShell**) should be investigated. Changes to the Batch version of the scripts can be requested, and changes/updates will be made as soon as possible, but updates may be slow to never, particularly if the PowerShell version is completed.
 
 ## Querying an Active Directory Domain
 
@@ -39,7 +39,7 @@ Multiple steps are required to compile the files used by the scripts provided. T
 ### PowerShell Version
 
 1. Download the file from the 'PowerShell' folder in this repository (.zip) or clone the repository
-1. Open PowerShell either directory on server or on a management workstation with RSAT installed.
+1. Open PowerShell either directly on server or on a management workstation with RSAT installed.
     * **If running directly on server, you should run from an Adminstrative PowerShell Prompt (Avoids UAC issues).**
 1. Import Functions: . .\Get-ADAuditData.ps1
 1. 'Get-Help Get-ADAuditData' to read the built-in help
