@@ -112,10 +112,7 @@ trustAttribute = {'1' : 'Non-Transitive',
 
 
 def mainConversion():
-    #sniff to find the format
-    #fileDialect = csv.Sniffer().sniff(csvfile.read(1024))
     csvfile.seek(0)
-    #read the CSV file into a dictionary
     dictReader = csv.DictReader(csvfile)
     dictFields = dictReader.fieldnames
     dictFields.append('relativeIdentifier')
@@ -124,9 +121,7 @@ def mainConversion():
                 delimiter='|', quoting=csv.QUOTE_MINIMAL)
     listWriter.writeheader()
     for row in dictReader:
-        #do your processing here
         if 'cn' in row:
-        #Alex Entringer 5/26/15
             if (not "X'" in row["cn"][:2]):
                 pass
             else:
@@ -134,7 +129,6 @@ def mainConversion():
                 row["cn"] = binascii.unhexlify(hex_string).decode('utf8')
 
         if 'name' in row:
-        #Alex Entringer 5/26/15
             if (not "X'" in row["name"][:2]):
                 pass
             else:
@@ -142,12 +136,10 @@ def mainConversion():
                 row["name"] = binascii.unhexlify(hex_string).decode('utf8')
 
         if 'userAccountControl' in row:
-        #Alex Entringer 10/3/14
             row["userAccountControl"] = options.get(row["userAccountControl"],
                                                     'Unknown Account Type')
 
         if 'lastLogonTimestamp' in row:
-            #Alex Entringer 10/3/14
             if (not row["lastLogonTimestamp"]):
                 pass
             elif int(row["lastLogonTimestamp"]) > 2:
@@ -157,7 +149,6 @@ def mainConversion():
                 row["lastLogonTimestamp"] = ''
 
         if 'pwdLastSet' in row:
-            #Alex Entringer 10/3/14
             if (not row["pwdLastSet"]):
                 pass
             elif int(row["pwdLastSet"]) > 0:
@@ -167,7 +158,6 @@ def mainConversion():
                 row["pwdLastSet"] = ''
 
         if 'accountExpires' in row:
-            #Alex Entringer 10/3/14
             if int(row["accountExpires"]) == 0:
                 row["accountExpires"] = ''
             elif int(row["accountExpires"]) > 922337203685477000:
@@ -177,17 +167,14 @@ def mainConversion():
                                         .strftime("%Y-%m-%d %H:%M:%S"))
 
         if 'whenCreated' in row:
-            #Alex Entringer 10/3/14
             row["whenCreated"] = (convert_generalized_timestamp(row["whenCreated"])
                                  .strftime("%Y-%m-%d %H:%M:%S"))
 
         if 'whenChanged' in row:
-            #Alex Entringer 10/3/14
             row["whenChanged"] = (convert_generalized_timestamp(row["whenChanged"])
                                   .strftime("%Y-%m-%d %H:%M:%S"))
 
         if 'objectSid' in row:
-            #Alex Entringer 10/3/14
             arrSid = row["objectSid"]
             arrSid = arrSid[2:-1]
             strSidDec = HexStrToDecStr(arrSid)
@@ -195,8 +182,6 @@ def mainConversion():
             row["relativeIdentifier"] = strSidDec.split('-')[-1]
 
         if 'member' in row:
-            #Alex Entringer 10/3/14
-            #Alex Entringer 5/21/15 - Added unhexlify
             if (not row["member"]):
                 pass
             else:
@@ -215,8 +200,6 @@ def mainConversion():
                 row["member"] = finalList
 
         if 'memberOf' in row:
-            #Alex Entringer 10/3/14
-            #Alex Entringer 5/21/15 - Added unhexlify
             if (not row["memberOf"]):
                 pass
             else:
@@ -235,8 +218,6 @@ def mainConversion():
                 row["memberOf"] = finalList
 
         if 'msDS-PSOAppliesTo' in row:
-            #Alex Entringer 10/9/14
-            #Alex Entringer 5/21/15 - Added unhexlify
             if (not row["msDS-PSOAppliesTo"]):
                 pass
             else:
@@ -255,7 +236,6 @@ def mainConversion():
                 row["msDS-PSOAppliesTo"] = finalList
 
         if 'searchFlags' in row:
-        #Alex Entringer 10/3/14
             if (not row["searchFlags"]):
                 pass
             else:
@@ -263,7 +243,6 @@ def mainConversion():
                                       'Unknown Search Flag')
 
         if 'msDS-User-Account-Control-Computed' in row:
-            #Alex Entringer 10/28/14
             if (not row["msDS-User-Account-Control-Computed"]):
                 pass
             elif (row["pwdLastSet"] == '' and 'Password Not Required' in row["userAccountControl"]):
@@ -273,7 +252,6 @@ def mainConversion():
                                                             'Unknown Account Status')
 
         if 'msDS-UserPasswordExpiryTimeComputed' in row:
-            #Alex Entringer 10/3/14
             if int(row["msDS-UserPasswordExpiryTimeComputed"]) == 0:
                 row["msDS-UserPasswordExpiryTimeComputed"] = ''
             elif int(row["msDS-UserPasswordExpiryTimeComputed"]) > 922337203685477000:
@@ -283,7 +261,6 @@ def mainConversion():
                                         .strftime("%Y-%m-%d %H:%M:%S"))
 
         if 'lockoutTime' in row:
-            #Alex Entringer 10/28/14
             if (not row["lockoutTime"]):
                 pass
             elif row["lockoutTime"] == '0':
@@ -292,7 +269,6 @@ def mainConversion():
                 row["lockoutTime"] = convert_ad_timestamp(row["lockoutTime"])
 
         if 'msDS-MaximumPasswordAge' in row:
-        #Alex Entringer 10/9/14
             if (not row["msDS-MaximumPasswordAge"]):
                 pass
             elif row["msDS-MaximumPasswordAge"] == '-9223372036854775808':
@@ -301,28 +277,24 @@ def mainConversion():
                 row["msDS-MaximumPasswordAge"] = convert_fgpp_timestamp(row["msDS-MaximumPasswordAge"])
 
         if 'msDS-MinimumPasswordAge' in row:
-        #Alex Entringer 10/9/14
             if (not row["msDS-MinimumPasswordAge"]):
                 pass
             else:
                 row["msDS-MinimumPasswordAge"] = convert_fgpp_timestamp(row["msDS-MinimumPasswordAge"])
 
         if 'msDS-LockoutObservationWindow' in row:
-        #Alex Entringer 10/9/14
             if (not row["msDS-LockoutObservationWindow"]):
                 pass
             else:
                 row["msDS-LockoutObservationWindow"] = convert_fgpp_timestamp(row["msDS-LockoutObservationWindow"])
 
         if 'msDS-LockoutDuration' in row:
-        #Alex Entringer 10/9/14
             if (not row["msDS-LockoutDuration"]):
                 pass
             else:
                 row["msDS-LockoutDuration"] = convert_fgpp_timestamp(row["msDS-LockoutDuration"])
 
         if 'msDS-SupportedEncryptionTypes' in row:
-        #Alex Entringer 12/10/14
             if (not row["msDS-SupportedEncryptionTypes"]):
                 pass
             else:
@@ -330,7 +302,6 @@ def mainConversion():
                                                        'Unknown Search Flag')
 
         if 'groupType' in row:
-        #Alex Entringer 4/30/15
             if (not row["groupType"]):
                 pass
             else:
@@ -338,7 +309,6 @@ def mainConversion():
                                    'Unknown Group Type')
 
         if 'trustDirection' in row:
-        #Alex Entringer 6/18/15
             if (not row["trustDirection"]):
                 pass
             else:
@@ -346,7 +316,6 @@ def mainConversion():
                                                         'Unknown Trust Direction')
 
         if 'trustType' in row:
-        #Alex Entringer 6/18/15
             if (not row["trustType"]):
                 pass
             else:
@@ -354,7 +323,6 @@ def mainConversion():
                                                 'Unknown Trust Type')
 
         if 'trustAttributes' in row:
-        #Alex Entringer 6/18/15
             if (not row["trustAttributes"]):
                 pass
             else:
@@ -362,7 +330,6 @@ def mainConversion():
                                                             'Unknown Trust Attibute')
 
         if 'operatingSystem' in row:
-        #Alex Entringer 8/6/15
             if (not "X'" in row["operatingSystem"][:2]):
                 pass
             else:
@@ -370,10 +337,8 @@ def mainConversion():
                 row["operatingSystem"] = binascii.unhexlify(hex_string).decode('utf8')
 
         listWriter.writerow(row)
-#return
 
 def convert_generalized_timestamp(timestamp):
-    #Alex Entringer 10/3/14
     year = int(timestamp[:4])
     month = int(timestamp[4:6])
     day = int(timestamp[6:8])
@@ -388,15 +353,11 @@ def convert_generalized_timestamp(timestamp):
 def convert_ad_timestamp(timestamp):
     #Found at timestamp.ooz.ie/p/time-in-python.html
     #Modified for Arizona Time by Alex Entringer 10/01/14
-    #print timestamp
     epoch_start = datetime(year=1601, month=1,day=1)
-    #print epoch_start
     seconds_since_epoch = int(timestamp)/10**7
-    #print seconds_since_epoch
     return epoch_start + timedelta(seconds=seconds_since_epoch) - timedelta(hours=7)
 
 def convert_fgpp_timestamp(timestamp):
-    #Alex Entringer 10/9/14
     days = float(timestamp) / 10000000 / (-86400)
     hours = days%1
     hours = hours * 24
@@ -437,7 +398,7 @@ def HexStrToDecStr(arrSid):
         sidPortion2 = arrSid[32:40]
         if (not sidPortion2):
             machineID1 = str(int(ReSortSid(sidPortion1),16))
-            stringSid = 'S-' + sidRevision + '-' + identifierAuthority + '-' + securityNTNonUnique + '-' + machineID1 
+            stringSid = 'S-' + sidRevision + '-' + identifierAuthority + '-' + securityNTNonUnique + '-' + machineID1
             return stringSid
         else:
             sidPortion3 = arrSid[40:48]
@@ -489,4 +450,3 @@ if __name__ == '__main__':
                 print('Finished converting ',fname)
                 print('=======================================================================')
                 print()
-
