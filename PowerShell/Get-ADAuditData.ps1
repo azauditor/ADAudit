@@ -152,6 +152,9 @@ function Get-ADAuditData {
     New-Item -Path "$Path\$domain" -ItemType Directory | Out-Null
     Write-Verbose -Message 'Output Directory Created'
 
+    Write-Verbose -Message "Starting Execution at $(Get-Date -Format G)"
+    Write-Output "Starting Execution at $(Get-Date -Format G)`n`n" | Out-File "$Path\$domain\consoleOutput.txt"
+
     Write-Verbose -Message 'Exporting Active Directory Users'
     Get-ADUser -Filter * -Properties 'msDS-ResultantPSO','msDS-User-Account-Control-Computed','msDS-UserPasswordExpiryTimeComputed',* |
         Select-Object -ExcludeProperty memberOf,'msDS-UserPasswordExpiryTimeComputed',userAccountControl,'msDS-User-Account-Control-Computed' *,
@@ -253,6 +256,10 @@ function Get-ADAuditData {
     Write-Verbose -Message 'Exporting Active Directory Domain Trusts'
     Get-ADTrust -Filter * | Export-Csv -Path "$Path\$domain\$domain-trustedDomains.csv" -NoTypeInformation -Delimiter '|' -Append
     Write-Verbose -Message 'Active Directory Domain Trusts Exported'
+
+
+    Write-Verbose -Message "Finished Execution at $(Get-Date -Format G)"
+    Write-Output "Finished Execution at $(Get-Date -Format G)" | Out-File "$Path\$domain\consoleOutput.txt" -Append
 
     Write-Verbose -Message 'Compressing Output Data to Zip File'
     New-ZipFile -Path "$Path\$domain.zip" -Source "$Path\$domain"
