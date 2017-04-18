@@ -491,7 +491,9 @@ ORDER BY t1.[relativeIdentifier] ASC
 -- #############################################################################
 
 
-SELECT  t1.[msDS-ResultantPSO], 
+SELECT  t1.[msDS-ResultantPSO],
+        CAST(CONVERT(DATETIME,t1.[msDS-UserPasswordExpiryTimeComputed]) 
+        - t1.[pwdLastSet] AS INT) AS PasswordExpirationSetting,
         t1.[DN], t1.[displayName], t1.[givenName] AS 'First Name (givenName)', 
         t1.[sn] AS 'Last Name (sn)', t1.[cn],  
         t1.[sAMAccountName] AS 'Username (sAMAccountName)',
