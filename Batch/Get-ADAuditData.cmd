@@ -34,7 +34,7 @@ echo Execution Started at %DATE% %TIME% >> "%CD%\%domain%\consoleOutput.txt"
 echo( >> "%CD%\%domain%\consoleOutput.txt"
 echo ----------------------------------------------------- >> "%CD%\%domain%\consoleOutput.txt"
 
-csvde -r "(sAMAccountType=805306368)" -l msDS-ResultantPSO,msDS-User-Account-Control-Computed,msDS-UserPasswordExpiryTimeComputed,* -f "%CD%\%domain%\%domain%-Users.csv" >> "%CD%\%domain%\consoleOutput.txt"
+csvde -r "(sAMAccountType=805306368)" -l "accountExpires,adminCount,assistant,canonicalName,cn,comment,company,controlAccessRights,department,departmentNumber,description,displayName,distinguishedName,division,employeeID,employeeNumber,employeeType,generationQualifier,givenName,info,lastLogonTimestamp,lockoutTime,mail,managedObjects,manager,memberOf,middleName,msDS-AllowedToDelegateTo,msDS-PSOApplied,msDS-ResultantPSO,msDS-SourceObjectDN,msDS-User-Account-Control-Computed,msDS-UserPasswordExpiryTimeComputed,name,nTSecurityDescriptor,o,objectSid,ou,personalTitle,primaryGroupID,pwdLastSet,sAMAccountName,secretary,seeAlso,servicePrincipalName,sIDHistory,sn,title,uid,uidNumber,userAccountControl,userWorkstations,whenChanged,whenCreated" -f "%CD%\%domain%\%domain%-Users.csv" >> "%CD%\%domain%\consoleOutput.txt"
 
 echo Active Directory Users Exported
 echo( >> "%CD%\%domain%\consoleOutput.txt"
@@ -89,23 +89,23 @@ echo(
 :::::::::::::::::::::::::::::::::::::::::
 :: Active Directory Computers (csvde)
 :::::::::::::::::::::::::::::::::::::::::
-echo Pulling Active Directory Computers
-echo( >> "%CD%\%domain%\consoleOutput.txt"
-echo Computers Extraction >> "%CD%\%domain%\consoleOutput.txt"
-echo( >> "%CD%\%domain%\consoleOutput.txt"
-echo Execution Started at %DATE% %TIME% >> "%CD%\%domain%\consoleOutput.txt"
-echo( >> "%CD%\%domain%\consoleOutput.txt"
-echo ----------------------------------------------------- >> "%CD%\%domain%\consoleOutput.txt"
-
-csvde -r "(objectClass=computer)" -f "%CD%\%domain%\%domain%-Computers.csv" >> "%CD%\%domain%\consoleOutput.txt"
-
-echo Active Directory Computers Exported
-echo( >> "%CD%\%domain%\consoleOutput.txt"
-echo Execution Finished at %DATE% %TIME% >> "%CD%\%domain%\consoleOutput.txt"
-echo( >> "%CD%\%domain%\consoleOutput.txt"
-echo(
-echo -----------------------------------------------------
-echo(
+:: echo Pulling Active Directory Computers
+:: echo( >> "%CD%\%domain%\consoleOutput.txt"
+:: echo Computers Extraction >> "%CD%\%domain%\consoleOutput.txt"
+:: echo( >> "%CD%\%domain%\consoleOutput.txt"
+:: echo Execution Started at %DATE% %TIME% >> "%CD%\%domain%\consoleOutput.txt"
+:: echo( >> "%CD%\%domain%\consoleOutput.txt"
+:: echo ----------------------------------------------------- >> "%CD%\%domain%\consoleOutput.txt"
+:: 
+:: csvde -r "(objectClass=computer)" -f "%CD%\%domain%\%domain%-Computers.csv" >> "%CD%\%domain%\consoleOutput.txt"
+:: 
+:: echo Active Directory Computers Exported
+:: echo( >> "%CD%\%domain%\consoleOutput.txt"
+:: echo Execution Finished at %DATE% %TIME% >> "%CD%\%domain%\consoleOutput.txt"
+:: echo( >> "%CD%\%domain%\consoleOutput.txt"
+:: echo(
+:: echo -----------------------------------------------------
+:: echo(
 
 
 :::::::::::::::::::::::::::::::::::::::::
