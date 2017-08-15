@@ -22,10 +22,10 @@ options = {'512' : 'Enabled',
            '2050' : 'Disabled - Interdomain Trust Account',
            '2080' : 'Enabled - Interdomain Trust Account - Password Not Required',
            '2082' : 'Disabled - Interdomain Trust Account - Password Not Required',
-           '4128' : 'Enabled - Workstation Trust Account - Password Not Required',
-           '4130' : 'Disabled - Workstation Trust Account - Password Not Required',
            '4096' : 'Enabled - Workstation Trust Account',
            '4098' : 'Disabled - Workstation Trust Account',
+           '4128' : 'Enabled - Workstation Trust Account - Password Not Required',
+           '4130' : 'Disabled - Workstation Trust Account - Password Not Required',
            '8192' : 'Enabled - Server Trust Account',
            '8194' : 'Disabled - Server Trust Account',
            '66048' : 'Enabled - Password Does Not Expire',
@@ -41,19 +41,33 @@ options = {'512' : 'Enabled',
            '131586' : 'Disabled - Majority Node Set (MNS) Account',
            '131600' : 'Enabled - Majority Node Set (MNS) Account - Locked Out',
            '197120' : 'Enabled - Majority Note Set (MNS) Account - Password Does Not Expire',
-           '532480' : 'Server Trust Account - Trusted For Delegation (Domain Controller)',
+           '262656' : 'Enabled - Smartcard Required',
+           '262658' : 'Disabled - Smartcard Required',
+           '262690' : 'Disabled - Smartcard Required - Password Not Required',
+           '328194' : 'Disabled - Smartcard Required - Password Not Required - Password Does Not Expire',
+           '524800' : 'Enabled - Trusted For Delegation',
+           '528384' : 'Enabled - Workstation Trust Account - Trusted for Delegation',
+           '528386' : 'Disabled - Workstation Trust Account - Trusted for Delegation',
+           '528416' : 'Enabled - Workstation Trust Account - Trusted for Delegation - Password Not Required',
+           '528418' : 'Disabled - Workstation Trust Account - Trusted for Delegation - Password Not Required',
+           '532480' : 'Enabled - Server Trust Account - Trusted For Delegation (Domain Controller)',
+           '532482' : 'Disabled - Server Trust Account - Trusted For Delegation (Domain Controller)',
            '590336' : 'Enabled - Password Does Not Expire - Trusted For Delegation',
            '590338' : 'Disabled - Password Does Not Expire - Trusted For Delegation',
            '1049088' : 'Enabled - Not Delegated',
            '1049090' : 'Disabled - Not Delegated',
+           '1114624' : 'Enabled - Password Does Not Expire - Not Delegated',
+           '1114656' : 'Enabled - Password Not Required - Password Does Not Expire - Not Delegated',
            '2097664' : 'Enabled - Use DES Key Only',
            '2163200' : 'Enabled - Password Does Not Expire - Use DES Key Only',
            '2687488' : 'Enabled - Password Does Not Expire - Trusted For Delegation - Use DES Key Only',
+           '3211776' : 'Enabled - Password Does Not Expire - Not Delegated - Use DES Key Only',
            '4194816' : 'Enabled - PreAuthorization Not Required',
            '4260352' : 'Enabled - Password Does Not Expire - PreAuthorization Not Required',
-           '1114624' : 'Enabled - Password Does Not Expire - Not Delegated',
-           '1114656' : 'Enabled - Password Not Required - Password Does Not Expire - Not Delegated',
-           '3211776' : 'Enabled - Password Does Not Expire - Not Delegated - Use DES Key Only',
+           '16777216' : 'Enabled - Trusted To Authenticate For Delegation',
+           '16781312' : 'Enabled - Workstation Trust Account - Trusted to Authenticate For Delegation',
+           '16843264' : 'Enabled - Password Does Not Expire - Trusted to Authenticate For Delegation',
+           '83890176' : 'Enabled - Server Trust Account - Trusted For Delegation - (Read-Only Domain Controller (RODC))',
           }
 
 searchFlags = {'128' : 'Confidential',
@@ -75,37 +89,45 @@ encryptSupport = {'0' : '',
                   '31' : 'DES_CBC_CRC - DES_CBC_MD5 - RC4_HMAC_MD5 - AES128_CTS_HMAC_SHA1_96 - AES256_CTS_HMAC_SHA1_96',
                  }
 
-groupTypeList = {'2' : 'Global Distribution Group',
-                 '4' : 'Domain Local Distribution Group',
-                 '8' : 'Universal Distribution Group',
-                 '-2147483646' : 'Global Security Group',
-                 '-2147483644' : 'Domain Local Security Group',
-                 '-2147483643' : 'Built-In Local Security Group',
-                 '-2147483640' : 'Universal Security Group',
+groupTypeList = {'1' : 'Created by the System',
+                 '2' : 'Distribution Group - Global Distribution Group',
+                 '4' : 'Distribution Group - Domain Local Distribution Group',
+                 '8' : 'Distribution Group - Universal Distribution Group',
+                 '-2147483646' : 'Security Group - Global Security Group',
+                 '-2147483644' : 'Security Group - Domain Local Security Group',
+                 '-2147483643' : 'Security Group - Built-In Local Security Group',
+                 '-2147483640' : 'Security Group - Universal Security Group',
                 }
 
-trustDirect = {'0' : 'Disabled',
-               '1' : 'Inbound (Trusting Domain): This is a trusting domain or forest. The other domain or forest has access to the resources of this domain or forest. This domain or forest does not have access to resources that belong to the other domain or forest.',
-               '2' : 'Outbound (Trusted Domain): This is a trusted domain or forest. This domain or forest has access to resources of the other domain or forest. The other domain or forest does not have access to the resources of this domain or forest.',
+trustDirect = {'0' : 'Disabled (The Trust relationship exists but has been disabled)',
+               '1' : 'Inbound (One-Way Trust) (TrustING Domain): This is a trusting domain or forest. The other domain or forest has access to the resources of this domain or forest. This domain or forest does not have access to resources that belong to the other domain or forest.',
+               '2' : 'Outbound (One-Way Trust) (TrustED Domain): This is a trusted domain or forest. This domain or forest has access to resources of the other domain or forest. The other domain or forest does not have access to the resources of this domain or forest.',
                '3' : 'Bidirectional (Two-Way Trust): Each domain or forest has access to the resources of the other domain or forest.',
               }
 
-trustTyp = {'1' : 'Downlevel (Windows NT Domain External)',
-            '2' : 'Uplevel (Active Directory Domain)',
-            '3' : 'MIT (non-Windows) Kerberos Version 5 Realm',
-            '4' : 'DCE (Open Group Distributed Computing Environment; Theoretical Trust)',
+trustTyp = {'1' : 'Downlevel Trust (This trust is with a Windows NT Domain (Being External)',
+            '2' : 'Uplevel (Windows 2000 or later) Trust.  This trust is with an Active Directory domain (being parent-child, root domain, shortcut, external, or forest).',
+            '3' : 'MIT. This trust is with a (non-Windows) MIT Kerberos Version 5 Realm',
+            '4' : 'DCE. This trust is with a DCE realm.  DCE refers to Open Groups Distributed Computing Environment specification. This trust type is mainly theoretical)',
            }
 
-trustAttribute = {'1' : 'Non-Transitive',
-                  '2' : 'Up-level Trust (Windows 2000 and newer)',
+trustAttribute = {'0' : 'Non-Verifiable Trust (Ask Agency about this!)',
+                  '1' : 'Non-Transitive Trust (Disable transitivity)',
+                  '2' : 'Up-level Trust (Windows 2000 and newer can use link)',
                   '4' : 'Quarantined Domain External Trust (SID Filtering Enabled)',
-                  '8' : 'Forest Trust',
+                  '8' : 'Forest Transitive Trust',
                   '10' : 'Cross-Organizational Trust (Selective Authentication)',
+                  '16' : 'This is a "cross-org" trust with Selective Authentication enabled',
                   '20' : 'Intra-Forest Trust (Trust within the Forest)',
-                  '40' : 'Trust Attribute Treat As External',
+                  '32' : 'Forest-Internal',
+                  '40' : 'Treat As External',
+                  '64' : 'This is a forest trust with SIDHistory enabled',
+                  '68' : 'Quarantined Domain (External)',
                   '80' : 'Trust Attribute Uses RC4 Encryption',
                   '200' : 'Trust Attribute Cross Organization No TGT Delegation',
-                  '400' : 'Trust Attribute PIM Trust',
+                  '400' : 'PIM (Privleged Identity Management) Trust',
+                  '40000' : 'Tree Parent (Obsolete)',
+                  '80000' : 'Tree Root (Obsolete)',
                  }
 
 
@@ -115,6 +137,7 @@ def mainConversion():
     dictReader = csv.DictReader(csvfile)
     dictFields = dictReader.fieldnames
     dictFields.append('relativeIdentifier')
+    dictFields.append('forcePassReset')
     listWriter = csv.DictWriter(open(fname[:-4] + '_output.csv', 'w', newline=''),
                 fieldnames=dictFields,
                 delimiter='|', quoting=csv.QUOTE_MINIMAL)
@@ -136,7 +159,7 @@ def mainConversion():
 
         if 'userAccountControl' in row:
             row["userAccountControl"] = options.get(row["userAccountControl"],
-                                                    'Unknown Account Type')
+                                                    'Unknown Account Type - ' + row["userAccountControl"])
 
         if 'lastLogonTimestamp' in row:
             if (not row["lastLogonTimestamp"]):
@@ -153,11 +176,23 @@ def mainConversion():
             elif int(row["pwdLastSet"]) > 0:
                 row["pwdLastSet"] = (convert_ad_timestamp(row["pwdLastSet"])
                                     .strftime("%Y-%m-%d %H:%M:%S"))
+                row["forcePassReset"] = 'False'                 
+            elif int(row["pwdLastSet"]) == 0:
+                if ("Password Does Not Expire" in row["userAccountControl"]):
+                    row["forcePassReset"] = 'Not Forced Since Account Does Not Expire Passwords'
+                    row["pwdLastSet"] = ''
+                else:
+                    row["forcePassReset"] = 'User Must Reset Password on Next Logon'
+                    row["pwdLastSet"] = ''
+            elif int(row["pwdLastSet"]) == -1:
+                row["forcePassReset"] = '-1 ' + row["pwdLastSet"]
+                row["pwdLastSet"] = ''
             else:
                 row["pwdLastSet"] = ''
 
         if 'accountExpires' in row:
             if int(row["accountExpires"]) == 0:
+                #Value set to 0 means that the account never expires. This is normal.
                 row["accountExpires"] = ''
             elif int(row["accountExpires"]) > 922337203685477000:
                 row["accountExpires"] = ''
@@ -239,16 +274,16 @@ def mainConversion():
                 pass
             else:
                 row["searchFlags"] = searchFlags.get(row["searchFlags"],
-                                      'Unknown Search Flag')
+                                      'Unknown Search Flag - ' + row["searchFlags"])
 
         if 'msDS-User-Account-Control-Computed' in row:
             if (not row["msDS-User-Account-Control-Computed"]):
                 pass
             elif (row["pwdLastSet"] == '' and 'Password Not Required' in row["userAccountControl"]):
-                row["msDS-User-Account-Control-Computed"] = 'Password is Blank'
+                row["msDS-User-Account-Control-Computed"] = 'Password May be Blank'
             else:
                 row["msDS-User-Account-Control-Computed"] = uacComputed.get(row["msDS-User-Account-Control-Computed"],
-                                                            'Unknown Account Status')
+                                                            'Unknown Account Type - ')# + row["msDS-User-Account-Control-Computed"])
 
         if 'msDS-UserPasswordExpiryTimeComputed' in row:
             if int(row["msDS-UserPasswordExpiryTimeComputed"]) == 0:
@@ -298,35 +333,35 @@ def mainConversion():
                 pass
             else:
                 row["msDS-SupportedEncryptionTypes"] = encryptSupport.get(row["msDS-SupportedEncryptionTypes"],
-                                                       'Unknown Search Flag')
+                                                       'Unknown Encryption Type - ' + row["msDS-SupportedEncryptionTypes"])
 
         if 'groupType' in row:
             if (not row["groupType"]):
                 pass
             else:
                 row["groupType"] = groupTypeList.get(row["groupType"],
-                                   'Unknown Group Type')
+                                   'Unknown Group Type - ' + row["groupType"])
 
         if 'trustDirection' in row:
             if (not row["trustDirection"]):
                 pass
             else:
                 row["trustDirection"] = trustDirect.get(row["trustDirection"],
-                                                        'Unknown Trust Direction')
+                                                        'Unknown Trust Direction - ' + row["trustDirection"])
 
         if 'trustType' in row:
             if (not row["trustType"]):
                 pass
             else:
                 row["trustType"] = trustTyp.get(row["trustType"],
-                                                'Unknown Trust Type')
+                                                'Unknown Trust Type - ' + row["trustType"])
 
         if 'trustAttributes' in row:
             if (not row["trustAttributes"]):
                 pass
             else:
                 row["trustAttributes"] = trustAttribute.get(row["trustAttributes"],
-                                                            'Unknown Trust Attibute')
+                                                            'Unknown Trust Attibute - ' + row["trustAttributes"])
 
         if 'operatingSystem' in row:
             if (not "X'" in row["operatingSystem"][:2]):
@@ -336,6 +371,7 @@ def mainConversion():
                 row["operatingSystem"] = binascii.unhexlify(hex_string).decode('utf8')
 
         listWriter.writerow(row)
+#return
 
 def convert_generalized_timestamp(timestamp):
     year = int(timestamp[:4])
@@ -397,7 +433,7 @@ def HexStrToDecStr(arrSid):
         sidPortion2 = arrSid[32:40]
         if (not sidPortion2):
             machineID1 = str(int(ReSortSid(sidPortion1),16))
-            stringSid = 'S-' + sidRevision + '-' + identifierAuthority + '-' + securityNTNonUnique + '-' + machineID1
+            stringSid = 'S-' + sidRevision + '-' + identifierAuthority + '-' + securityNTNonUnique + '-' + machineID1 
             return stringSid
         else:
             sidPortion3 = arrSid[40:48]
@@ -449,3 +485,4 @@ if __name__ == '__main__':
                 print('Finished converting ',fname)
                 print('=======================================================================')
                 print()
+
