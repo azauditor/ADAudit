@@ -30,10 +30,10 @@ function ConvertFrom-UAC {
         2050    = 'Disabled - Interdomain Trust Account'
         2080    = 'Enabled - Interdomain Trust Account - Password Not Required'
         2082    = 'Disabled - Interdomain Trust Account - Password Not Required'
-        4128    = 'Enabled - Workstation Trust Account - Password Not Required'
-        4130    = 'Disabled - Workstation Trust Account - Password Not Required'
         4096    = 'Enabled - Workstation Trust Account'
         4098    = 'Disabled - Workstation Trust Account'
+        4128    = 'Enabled - Workstation Trust Account - Password Not Required'
+        4130    = 'Disabled - Workstation Trust Account - Password Not Required'
         8192    = 'Enabled - Server Trust Account'
         8194    = 'Disabled - Server Trust Account'
         66048   = 'Enabled - Password Does Not Expire'
@@ -48,20 +48,33 @@ function ConvertFrom-UAC {
         131584  = 'Enabled - Majority Node Set (MNS) Account'
         131586  = 'Disabled - Majority Node Set (MNS) Account'
         131600  = 'Enabled - Majority Node Set (MNS) Account - Locked Out'
-        197120  = 'Enabled - Majority Note Set (MNS) Account - Password Does Not Expire'
-        532480  = 'Server Trust Account - Trusted For Delegation (Domain Controller)'
-        590336  = 'Enabled - Password Does Not Expire - Trusted For Delegation'
-        590338  = 'Disabled - Password Does Not Expire - Trusted For Delegation'
-        1049088 = 'Enabled - Not Delegated'
-        1049090 = 'Disabled - Not Delegated'
-        2097664 = 'Enabled - Use DES Key Only'
-        2163200 = 'Enabled - Password Does Not Expire - Use DES Key Only'
-        2687488 = 'Enabled - Password Does Not Expire - Trusted For Delegation - Use DES Key Only'
-        4194816 = 'Enabled - PreAuthorization Not Required'
-        4260352 = 'Enabled - Password Does Not Expire - PreAuthorization Not Required'
-        1114624 = 'Enabled - Password Does Not Expire - Not Delegated'
-        1114656 = 'Enabled - Password Not Required - Password Does Not Expire - Not Delegated'
-        3211776 = 'Enabled - Password Does Not Expire - Not Delegated - Use DES Key Only'
+        197120   = 'Enabled - Majority Note Set (MNS) Account - Password Does Not Expire'
+        262656   = 'Enabled - Smartcard Required'
+        262658   = 'Disabled - Smartcard Required'
+        262690   = 'Disabled - Smartcard Required - Password Not Required'
+        328194   = 'Disabled - Smartcard Required - Password Not Required - Password Does Not Expire'
+        524800   = 'Enabled - Trusted For Delegation'
+        528384   = 'Enabled - Workstation Trust Account - Trusted for Delegation'
+        528386   = 'Disabled - Workstation Trust Account - Trusted for Delegation'
+        528416   = 'Enabled - Workstation Trust Account - Trusted for Delegation - Password Not Required'
+        528418   = 'Disabled - Workstation Trust Account - Trusted for Delegation - Password Not Required'
+        532480   = 'Server Trust Account - Trusted For Delegation (Domain Controller)'
+        532482   = 'Disabled - Server Trust Account - Trusted For Delegation (Domain Controller)'
+        590336   = 'Enabled - Password Does Not Expire - Trusted For Delegation'
+        590338   = 'Disabled - Password Does Not Expire - Trusted For Delegation'
+        1049088  = 'Enabled - Not Delegated'
+        1049090  = 'Disabled - Not Delegated'
+        1114624  = 'Enabled - Password Does Not Expire - Not Delegated'
+        1114656  = 'Enabled - Password Not Required - Password Does Not Expire - Not Delegated'
+        2097664  = 'Enabled - Use DES Key Only'
+        2163200  = 'Enabled - Password Does Not Expire - Use DES Key Only'
+        2687488  = 'Enabled - Password Does Not Expire - Trusted For Delegation - Use DES Key Only'
+        3211776  = 'Enabled - Password Does Not Expire - Not Delegated - Use DES Key Only'
+        4194816  = 'Enabled - PreAuthorization Not Required'
+        4260352  = 'Enabled - Password Does Not Expire - PreAuthorization Not Required'
+        16781312 = 'Enabled - Workstation Trust Account - Trusted to Authenticate For Delegation'
+        16843264 = 'Enabled - Password Does Not Expire - Trusted to Authenticate For Delegation'
+        83890176 = 'Enabled - Server Trust Account - Trusted For Delegation - (Read-Only Domain Controller (RODC))'
     }
 
     if ($uacOptions.ContainsKey($Value)) {
@@ -156,12 +169,28 @@ function Get-ADAuditData {
     Write-Output "Starting Execution at $(Get-Date -Format G)`n`n" | Out-File "$Path\$domain\consoleOutput.txt"
 
     Write-Verbose -Message 'Exporting Active Directory Users'
-    Get-ADUser -Filter * -Properties 'msDS-ResultantPSO','msDS-User-Account-Control-Computed','msDS-UserPasswordExpiryTimeComputed',* |
-        Select-Object -ExcludeProperty memberOf,'msDS-UserPasswordExpiryTimeComputed',userAccountControl,'msDS-User-Account-Control-Computed' *,
-            @{Name="memberOf";Expression={(($_.memberof -split (",") | Select-String -AllMatches "CN=") -join ", ") -replace "CN=" -replace "" }},
-            @{Name='PasswordExpirationDate';Expression={([datetime]::FromFileTime($_.'msDS-UserPasswordExpiryTimeComputed')).ToString("M/d/yyyy h:mm:ss tt")}},
-            @{Name='userAccountControl';Expression={(ConvertFrom-UAC($_.userAccountControl))}},
-            @{Name='userAccountControlComputed';Expression={(ConvertFrom-UACComputed($_.'msDS-User-Account-Control-Computed'))}} |
+    Get-ADUser -Filter * -Properties 'accountExpirationDate','adminCount','assistant','canonicalName','cn','comment','company','controlAccessRights','department',
+        'departmentNumber','description','displayName','distinguishedName','division','employeeID','employeeNumber','employeeType','generationQualifier','givenName',
+        'info','lastLogonTimestamp','lockoutTime','mail','managedObjects','manager','memberOf','middleName','msDS-AllowedToDelegateTo','msDS-PSOApplied',
+        'msDS-ResultantPSO','msDS-SourceObjectDN','msDS-User-Account-Control-Computed','msDS-UserPasswordExpiryTimeComputed','name','o','objectSid','ou',
+        'PasswordLastSet','PasswordExpired','personalTitle','primaryGroupID','sAMAccountName','secretary','seeAlso','servicePrincipalName','sIDHistory',
+        'sn','title','uid','uidNumber','userAccountControl','userWorkstations','whenChanged','whenCreated' |
+        Select-Object 'accountExpirationDate','adminCount','assistant','canonicalName','cn','comment','company',
+            @{Name='controlAccessRights';Expression={$_.controlAccessRights -join ';'}},'department',@{Name='departmentNumber';Expression={$_.departmentNumber -join ';'}},
+            'description','displayName','distinguishedName','division','employeeID','employeeNumber','employeeType','generationQualifier','givenName','info','lockoutTime','mail',
+            @{Name='managedObjects';Expression={$_.managedObjects -join ';'}},'manager',
+            @{Name='memberOf';Expression={(($_.memberof -split (",") | Select-String -AllMatches "CN=") -join ", ") -replace "CN=" -replace "" }},
+            'middleName',@{Name='msDS-AllowedToDelegateTo';Expression={$_.'msDS-AllowedToDelegateTo' -join ';'}},
+            @{Name='msDS-PSOApplied';Expression={$_.'msDS-PSOApplied' -join ';'}},
+            'msDS-ResultantPSO','msDS-SourceObjectDN',
+            @{Name='msDS-User-Account-Control-Computed';Expression={(ConvertFrom-UACComputed($_.'msDS-User-Account-Control-Computed'))}},
+            @{Name='msDS-UserPasswordExpiryTimeComputed';Expression={([datetime]::FromFileTime($_.'msDS-UserPasswordExpiryTimeComputed')).ToString("M/d/yyyy h:mm:ss tt")}},
+            @{Name='lastLogonTimestamp';Expression={([datetime]::FromFileTime($_.lastLogonTimestamp)).ToString("M/d/yyyy h:mm:ss tt")}},
+            'name',@{Name='o';Expression={$_.o -join ';'}},'objectSid',@{Name='ou';Expression={$_.ou -join ';'}},'PasswordLastSet','PasswordExpired','personalTitle',
+            'primaryGroupID','sAMAccountName',@{Name='secretary';Expression={$_.secretary -join ';'}},@{Name='seeAlso';Expression={$_.seeAlso -join ';'}},
+            @{Name='servicePrincipalName';Expression={$_.servicePrincipalName -join ';'}},@{Name='sIDHistory';Expression={$_.sIDHistory -join ';'}},'sn','title',
+            @{Name='uid';Expression={$_.uid -join ';'}},'uidNumber',@{Name='userAccountControl';Expression={(ConvertFrom-UAC($_.userAccountControl))}},
+            'userWorkstations','whenChanged','whenCreated' |
         Export-Csv -Path "$Path\$domain\$domain-Users.csv" -NoTypeInformation -Delimiter '|' -Append
     Write-Verbose -Message 'Active Directory Users Exported'
 
@@ -178,9 +207,9 @@ function Get-ADAuditData {
         Export-Csv -Path "$Path\$domain\$domain-OUs.csv" -NoTypeInformation -Delimiter '|' -Append
     Write-Verbose -Message 'Active Directory OUs Exported'
 
-    Write-Verbose -Message 'Exporting Active Directory Computers'
-    Get-ADComputer -Properties * | Export-Csv -Path "$Path\$domain\$domain-Computers.csv" -NoTypeInformation -Delimiter '|' -Append
-    Write-Verbose -Message 'Active Directory Computers Exported'
+    #Write-Verbose -Message 'Exporting Active Directory Computers'
+    #Get-ADComputer -Properties * | Export-Csv -Path "$Path\$domain\$domain-Computers.csv" -NoTypeInformation -Delimiter '|' -Append
+    #Write-Verbose -Message 'Active Directory Computers Exported'
 
     Write-Verbose -Message 'Exporting Active Directory Group Policy Objects'
     New-Item -Path "$Path\$domain\GroupPolicy" -ItemType Directory | Out-Null
