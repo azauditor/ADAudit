@@ -64,6 +64,7 @@ options = {'512' : 'Enabled',
            '3211776' : 'Enabled - Password Does Not Expire - Not Delegated - Use DES Key Only',
            '4194816' : 'Enabled - PreAuthorization Not Required',
            '4260352' : 'Enabled - Password Does Not Expire - PreAuthorization Not Required',
+           '4260354' : 'Enabled - Password Does Not Expire - PreAuthorization Not Required',
            '16777216' : 'Enabled - Trusted To Authenticate For Delegation',
            '16781312' : 'Enabled - Workstation Trust Account - Trusted to Authenticate For Delegation',
            '16843264' : 'Enabled - Password Does Not Expire - Trusted to Authenticate For Delegation',
@@ -176,7 +177,7 @@ def mainConversion():
             elif int(row["pwdLastSet"]) > 0:
                 row["pwdLastSet"] = (convert_ad_timestamp(row["pwdLastSet"])
                                     .strftime("%Y-%m-%d %H:%M:%S"))
-                row["forcePassReset"] = 'False'                 
+                row["forcePassReset"] = 'False'
             elif int(row["pwdLastSet"]) == 0:
                 if ("Password Does Not Expire" in row["userAccountControl"]):
                     row["forcePassReset"] = 'Not Forced Since Account Does Not Expire Passwords'
@@ -433,7 +434,7 @@ def HexStrToDecStr(arrSid):
         sidPortion2 = arrSid[32:40]
         if (not sidPortion2):
             machineID1 = str(int(ReSortSid(sidPortion1),16))
-            stringSid = 'S-' + sidRevision + '-' + identifierAuthority + '-' + securityNTNonUnique + '-' + machineID1 
+            stringSid = 'S-' + sidRevision + '-' + identifierAuthority + '-' + securityNTNonUnique + '-' + machineID1
             return stringSid
         else:
             sidPortion3 = arrSid[40:48]
