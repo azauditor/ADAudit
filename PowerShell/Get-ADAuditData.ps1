@@ -72,7 +72,7 @@ function ConvertFrom-UAC {
         3211776  = 'Enabled - Password Does Not Expire - Not Delegated - Use DES Key Only'
         4194816  = 'Enabled - PreAuthorization Not Required'
         4260352  = 'Enabled - Password Does Not Expire - PreAuthorization Not Required'
-        4260354  = 'Enabled - Password Does Not Expire - PreAuthorization Not Required'
+        4260354  = 'Disabled - Password Does Not Expire - PreAuthorization Not Required'
         16781312 = 'Enabled - Workstation Trust Account - Trusted to Authenticate For Delegation'
         16843264 = 'Enabled - Password Does Not Expire - Trusted to Authenticate For Delegation'
         83890176 = 'Enabled - Server Trust Account - Trusted For Delegation - (Read-Only Domain Controller (RODC))'
