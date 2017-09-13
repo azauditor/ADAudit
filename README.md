@@ -11,10 +11,9 @@ These script files were born out of a need to automate and standardize audit wor
 >## PowerShell Disclaimer
 >If your systems support it, you should **use PowerShell** instead of the Batch scripts to perform audit related work in Active Directory. The Batch scripts were originally designed at a time when the Arizona Auditor General still frequently encountered 2003 Domain Controllers and Windows XP management computers. Due to a lack of built-in support for PowerShell in those platforms (without manual installation), the scripts on the Batch folder were designed. If you know that the environment you will be auditing can use PowerShell (preferably v3 or greater), or if you are planning on using these in your own environment, **use PowerShell**. The use of PowerShell can also eliminate the need to use Python, which is used in this workflow due to a previous plan to use Linux machines for a portion of this audit work.
 >
->We do have a work-in-progress version available in the PowerShell folder, but this should **not** be considered ready for production.
 >>
 >> ### MAINTAINABILITY
->> These scripts were developed originally by Alex Entringer for the use of the Arizona Auditor General's IT Audit team. While the Batch scripts are robust and stable, Alex Entringer is no longer in an audit role and does not use these on regular basis. Though the Arizona Auditor General's audit teams do still use these scripts, these scripts should be considered deprecated and alternative solutions (**PowerShell**) should be investigated. Changes to the Batch version of the scripts can be requested, and changes/updates will be made as soon as possible, but updates may be slow to never, particularly if the PowerShell version is completed.
+>> These scripts were developed originally by Alex Entringer for the use of the Arizona Auditor General's IT Audit team. While the Batch scripts are robust and stable, these scripts should be considered deprecated. Changes to the Batch version of the scripts can be requested, and changes/updates will be made as soon as possible, but updates may be slow to never, as the PowerShell version is considered to be the replacement.
 
 ## Querying an Active Directory Domain
 
