@@ -120,7 +120,7 @@ function Get-ADAuditData {
 
     .DESCRIPTION
     This function will extract key information from Active Directory that can be used to analyze The
-    management of an AD Domain. It queries information regarding Users, Groups, OUs, Computers,
+    management of an AD Domain. It queries information regarding Users, Groups, OUs,
     Group Policy Objects, Group Policy Inheritance, Fine Grained Password Policies, Confidential Attributes,
     and Trusted Domains.
 
