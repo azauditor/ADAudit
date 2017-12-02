@@ -14,6 +14,20 @@ function New-ZipFile {
     }
 }
 
+Function Remove-InvalidFileNameChars {
+    # https://stackoverflow.com/questions/23066783/how-to-strip-illegal-characters-before-trying-to-save-filenames#23067832
+    param(
+        [Parameter(Mandatory=$true,
+        Position=0,
+        ValueFromPipeline=$true,
+        ValueFromPipelineByPropertyName=$true)]
+        [String]$Name
+    )
+    $invalidChars = [IO.Path]::GetInvalidFileNameChars() -join ''
+    $re = "[{0}]" -f [RegEx]::Escape($invalidChars)
+    return ($Name -replace $re)
+  }
+
 function ConvertFrom-UAC {
     param (
         [Parameter(Mandatory=$True, Position=0, ValueFromPipeline=$true)]
@@ -265,7 +279,7 @@ function Get-ADAuditData {
     New-Item -Path "$Path\$domain\GroupPolicy" -ItemType Directory | Out-Null
     New-Item -Path "$Path\$domain\GroupPolicy\Reports" -ItemType Directory | Out-Null
     Get-GPO -All @credObject @domainObj | ForEach-Object {
-        $GPOName = $_.DisplayName
+        $GPOName = Remove-InvalidFileNameChars($_.DisplayName)
         Get-GPOReport $_.id -ReportType HTML -Path "$Path\$domain\GroupPolicy\Reports\$GPOName.html"
     }
 
@@ -285,9 +299,10 @@ function Get-ADAuditData {
     $domainGPI | Select-Object Name,ContainerType,Path,GpoInheritanceBlocked | Format-List | Out-File -FilePath "$Path\$domain\GroupPolicy\Inheritance\$domain.txt"
     $domainGPI | Select-Object -ExpandProperty InheritedGpoLinks | Out-File -FilePath "$Path\$domain\GroupPolicy\Inheritance\$domain.txt" -Append
     Get-ADOrganizationalUnit -Filter * | ForEach-Object {
+        $FileName = Remove-InvalidFileNameChars($_.DistinguishedName)
         $CurrentGPI = Get-GPInheritance -Target $_.DistinguishedName
-        $CurrentGPI | Select-Object Name,ContainerType,Path,GpoInheritanceBlocked | Format-List | Out-File -FilePath "$Path\$domain\GroupPolicy\Inheritance\$_.DistinguishedName.txt"
-        $CurrentGPI | Select-Object -ExpandProperty InheritedGpoLinks | Out-File -FilePath "$Path\$domain\GroupPolicy\Inheritance\$_.DistinguishedName.txt" -Append
+        $CurrentGPI | Select-Object Name,ContainerType,Path,GpoInheritanceBlocked | Format-List | Out-File -FilePath "$Path\$domain\GroupPolicy\Inheritance\$FileName.txt"
+        $CurrentGPI | Select-Object -ExpandProperty InheritedGpoLinks | Out-File -FilePath "$Path\$domain\GroupPolicy\Inheritance\$FileName.txt" -Append
     }
 
     # Count Inheritance files for reporting
@@ -334,12 +349,13 @@ function Get-ADAuditData {
     $OUs += Get-ADObject -SearchBase (Get-ADDomain).DistinguishedName -SearchScope OneLevel -LDAPFilter '(objectClass=container)' | Select-Object -ExpandProperty DistinguishedName
 
     ForEach ($OU in $OUs) {
+        $FileName = Remove-InvalidFileNameChars($OU)
         Get-Acl -Path "AD:\$OU" | Select-Object -ExpandProperty Access |
             Select-Object @{name='organizationalUnit';expression={$OU}},
                 @{name='objectTypeName';expression={if ($_.objectType.ToString() -eq '00000000-0000-0000-0000-000000000000') {'All'} Else {$schemaIDGUID.Item($_.objectType)}}},
                 @{name='inheritedObjectTypeName';expression={$schemaIDGUID.Item($_.inheritedObjectType)}},* |
             ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
-            Out-File -FilePath "$Path\$domain\OU\ACLs\$OU.csv" -Append
+            Out-File -FilePath "$Path\$domain\OU\ACLs\$FileName.csv" -Append
     }
 
     # Count OU ACL files for reporting
