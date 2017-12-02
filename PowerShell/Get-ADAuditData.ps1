@@ -26,7 +26,7 @@ Function Remove-InvalidFileNameChars {
     $invalidChars = [IO.Path]::GetInvalidFileNameChars() -join ''
     $re = "[{0}]" -f [RegEx]::Escape($invalidChars)
     return ($Name -replace $re)
-  }
+}
 
 function ConvertFrom-UAC {
     param (
