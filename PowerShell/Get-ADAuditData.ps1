@@ -193,7 +193,7 @@ function Get-ADAuditData {
     Write-Output "Exporting Active Directory Users $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
     Get-ADUser -Filter * -Properties 'accountExpirationDate','adminCount','assistant','canonicalName','cn','comment','company','controlAccessRights','department',
         'departmentNumber','description','displayName','distinguishedName','division','employeeID','employeeNumber','employeeType','generationQualifier','givenName',
-        'info','lastLogonTimestamp','mail','managedObjects','manager','memberOf','middleName','msDS-AllowedToDelegateTo','msDS-PSOApplied',
+        'info','LastLogonDate','mail','managedObjects','manager','memberOf','middleName','msDS-AllowedToDelegateTo','msDS-PSOApplied',
         'msDS-ResultantPSO','msDS-SourceObjectDN','msDS-User-Account-Control-Computed','msDS-UserPasswordExpiryTimeComputed','name','o','objectSid','ou',
         'PasswordLastSet','PasswordExpired','personalTitle','primaryGroupID','sAMAccountName','secretary','seeAlso','servicePrincipalName','sIDHistory',
         'sn','title','uid','uidNumber','userAccountControl','userWorkstations','whenChanged','whenCreated' |
@@ -208,8 +208,7 @@ function Get-ADAuditData {
             'msDS-SourceObjectDN',
             @{Name='msDS-User-Account-Control-Computed';Expression={(ConvertFrom-UACComputed($_.'msDS-User-Account-Control-Computed'))}},
             @{Name='msDS-UserPasswordExpiryTimeComputed';Expression={([datetime]::FromFileTime($_.'msDS-UserPasswordExpiryTimeComputed')).ToString("M/d/yyyy h:mm:ss tt")}},
-            @{Name='lastLogonTimestamp';Expression={([datetime]::FromFileTime($_.lastLogonTimestamp)).ToString("M/d/yyyy h:mm:ss tt")}},
-            'name',@{Name='o';Expression={$_.o -join ';'}},'objectSid',@{Name='ou';Expression={$_.ou -join ';'}},'PasswordLastSet','PasswordExpired','personalTitle',
+            'LastLogonDate','name',@{Name='o';Expression={$_.o -join ';'}},'objectSid',@{Name='ou';Expression={$_.ou -join ';'}},'PasswordLastSet','PasswordExpired','personalTitle',
             'primaryGroupID','sAMAccountName',@{Name='relativeIdentifer';Expression={($_.SID.Value).Split('-')[-1]}},@{Name='secretary';Expression={$_.secretary -join ';'}},
             @{Name='seeAlso';Expression={$_.seeAlso -join ';'}},@{Name='servicePrincipalName';Expression={$_.servicePrincipalName -join ';'}},
             @{Name='sIDHistory';Expression={$_.sIDHistory -join ';'}},'sn','title',@{Name='uid';Expression={$_.uid -join ';'}},'uidNumber',
