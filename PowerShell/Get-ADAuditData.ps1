@@ -10,7 +10,7 @@ function New-ZipFile {
     if ((Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" -Name Release).Release -ge 394802) {
         Add-Type -Assembly System.IO.Compression.FileSystem
         $compressionLevel = [System.IO.Compression.CompressionLevel]::Optimal
-        [System.IO.Compression.ZipFile]::CreateFromDirectory($Source,$Path, $compressionLevel, $false)
+        [System.IO.Compression.ZipFile]::CreateFromDirectory($Source,$Path, $compressionLevel, $true)
     }
 }
 
@@ -186,7 +186,7 @@ function Get-ADAuditData {
     Write-Verbose -Message "Output Directory Created $(Get-Date -Format G)"
 
     Write-Verbose -Message "Starting Execution at $(Get-Date -Format G)"
-    Write-Output "Starting Execution at $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt"
+    Write-Output "Starting Execution at $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Encoding utf8
 
     #region Export AD Users
     Write-Verbose -Message "Exporting Active Directory Users $(Get-Date -Format G)"
@@ -384,6 +384,14 @@ function Get-ADAuditData {
     Write-Output "$rows Active Directory Confidential Bit Details Exported $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
     $rows = $null
     #endregion Export AD Confidentiality Bit
+
+    #region Export AD Default Domain Password Policy
+    Write-Verbose -Message "Exporting Active Directory Default Domain Password Policy $(Get-Date -Format G)"
+    Write-Output "Exporting Active Directory Default Domain Password Policy $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Get-ADDefaultDomainPasswordPolicy | Out-File -FilePath "$Path\$domain\$domain-defaultDomainPasswordPolicy.txt" -Encoding utf8
+    Write-Verbose -Message "$rows Active Directory Default Domain Password Policy Exported $(Get-Date -Format G)"
+    Write-Output "$rows Active Directory Default Domain Password Policy Exported $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    #endregion Export AD Default Domain Password Policy
 
     #region Export AD FGPP
     Write-Verbose -Message "Exporting Active Directory Fine Grained Password Policies $(Get-Date -Format G)"
