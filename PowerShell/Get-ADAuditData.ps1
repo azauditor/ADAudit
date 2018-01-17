@@ -176,7 +176,8 @@ function Get-ADAuditData {
         break
     }
 
-    $domain = (Get-ADDomain -Current LocalComputer).DistinguishedName
+    $domainInfo = Get-ADDomain -Current LocalComputer
+    $domain = $domainInfo.DistinguishedName
 
     Write-Verbose -Message "Creating Output Directory $(Get-Date -Format G)"
     if (Test-Path -Path "$Path\$domain") {
@@ -186,11 +187,37 @@ function Get-ADAuditData {
     Write-Verbose -Message "Output Directory Created $(Get-Date -Format G)"
 
     Write-Verbose -Message "Starting Execution at $(Get-Date -Format G)"
-    Write-Output "Starting Execution at $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Encoding utf8
+    Write-Output "Starting Execution at $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Encoding utf8
 
+    #region Export Domain Information
+    Write-Verbose -Message "Exporting Active Directory Domain Information $(Get-Date -Format G)"
+    Write-Output "Exporting Active Directory Domain Information $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
+    $domainInfo | Select-Object @{Name='ChildDomains';Expression={$_.ChildDomains -join ';'}},'ComputersContainer','DeletedObjectsContainer',
+            'DistinguishedName','DNSRoot','DomainControllersContainer','DomainMode','DomainSID','Forest','InfrastructureMaster','Name','NetBIOSName',
+            'ParentDomain','PDCEmulator','RIDMaster','SystemsContainer','UsersContainer' |
+        ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
+        Out-File -FilePath "$Path\$domain\$domain-Info.csv" -Append
+    Write-Verbose -Message "Active Directory Domain Information Exported $(Get-Date -Format G)"
+    Write-Output "Active Directory Domain Information Exported $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
+        
+    #endregion Export Domain Information
+    
+    #region Export Forest Information
+    Write-Verbose -Message "Exporting Active Directory Forest Information $(Get-Date -Format G)"
+    Write-Output "Exporting Active Directory Forest Information $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
+    Get-ADForest -Current LocalComputer |
+        Select-Object 'DomainNamingMaster',@{Name='Domains';Expression={$_.Domains -join ';'}},'ForestMode',
+            @{Name='GlobalCatalogs';Expression={$_.GlobalCatalogs -join ';'}},'Name','RootDomain','SchemaMaster',@{Name='UPNSuffixes';
+            Expression={$_.UPNSuffixes -join ';'}} |
+        ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
+        Out-File -FilePath "$Path\$domain\$domain-ForestInfo.csv" -Append
+    Write-Verbose -Message "Active Directory Forest Information Exported $(Get-Date -Format G)"
+    Write-Output "Active Directory Forest Information Exported $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
+    #endregion Export Forest Information    
+    
     #region Export AD Users
     Write-Verbose -Message "Exporting Active Directory Users $(Get-Date -Format G)"
-    Write-Output "Exporting Active Directory Users $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "Exporting Active Directory Users $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     Get-ADUser -Filter * -Properties 'accountExpirationDate','adminCount','assistant','canonicalName','cn','comment','company','controlAccessRights','department',
         'departmentNumber','description','displayName','distinguishedName','division','employeeID','employeeNumber','employeeType','generationQualifier','givenName',
         'info','LastLogonDate','mail','managedObjects','manager','memberOf','middleName','msDS-AllowedToDelegateTo','msDS-PSOApplied',
@@ -224,13 +251,13 @@ function Get-ADAuditData {
     $rows--
 
     Write-Verbose -Message "$rows Active Directory Users Exported $(Get-Date -Format G)"
-    Write-Output "$rows Active Directory Users Exported $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "$rows Active Directory Users Exported $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     $rows = $null
     #endregion Export AD Users
 
     #region Export AD Groups
     Write-Verbose -Message "Exporting Active Directory Groups $(Get-Date -Format G)"
-    Write-Output "Exporting Active Directory Groups $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "Exporting Active Directory Groups $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     Get-ADGroup -Filter * -Properties 'distinguishedName','sAMAccountName','CN','displayName','name','description','GroupCategory','GroupScope','ManagedBy', 'memberOf','objectSID','msDS-PSOApplied','whenCreated','whenChanged' |
         Select-Object 'distinguishedName','sAMAccountName','CN','displayName','name','description','GroupCategory','GroupScope','ManagedBy',
             @{Name="memberOf";Expression={(($_.memberof -split (",") | Select-String -AllMatches "CN=") -join ", ") -replace "CN=" -replace "" }},
@@ -248,13 +275,27 @@ function Get-ADAuditData {
     $rows--
 
     Write-Verbose -Message "$rows Active Directory Groups Exported $(Get-Date -Format G)"
-    Write-Output "$rows Active Directory Groups Exported $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "$rows Active Directory Groups Exported $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     $rows = $null
     #endregion Export AD Groups
 
+    #region Export AD Computers
+    Write-Verbose -Message "Exporting Computer Accounts $(Get-Date -Format G)"
+    Write-Output "Exporting Computer Accounts $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
+    Get-ADComputer -Filter * -Properties 'cn','description','displayName','distinguishedName','LastLogonDate','name','objectSid','operatingSystem','operatingSystemServicePack',
+        'operatingSystemVersion','primaryGroupID','PasswordLastSet','relativeIdentifier','userAccountControl','whenChanged' |
+        Select-Object 'cn','description','displayName','distinguishedName','LastLogonDate','name','objectSid',
+        'operatingSystem','operatingSystemServicePack','operatingSystemVersion','primaryGroupID','PasswordLastSet',
+        @{Name='userAccountControl';Expression={(ConvertFrom-UAC($_.userAccountControl))}},'whenChanged' |
+        ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
+        Out-File -FilePath "$Path\$domain\$domain-Computers.csv" -Append
+    Write-Verbose -Message "Active Directory Computers Exported $(Get-Date -Format G)"
+    Write-Output "Active Directory Computers Exported $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
+    #endregion Export AD Computers
+
     #region Export AD OUs
     Write-Verbose -Message "Exporting Active Directory Organizational Units $(Get-Date -Format G)"
-    Write-Output "Exporting Active Directory Organizational Units $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "Exporting Active Directory Organizational Units $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     Get-ADOrganizationalUnit -Filter * -Properties 'DistinguishedName','Name','CanonicalName','DisplayName','Description','whenCreated','whenChanged','ManagedBy' |
         Select-Object 'DistinguishedName','Name','CanonicalName','DisplayName','Description','whenCreated','whenChanged','ManagedBy' |
         ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
@@ -268,13 +309,13 @@ function Get-ADAuditData {
     $rows--
 
     Write-Verbose -Message "$rows Active Directory OUs Exported $(Get-Date -Format G)"
-    Write-Output "$rows Active Directory OUs Exported $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "$rows Active Directory OUs Exported $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     $rows = $null
     #endregion Export AD OUs
 
     #region Export AD GPOs
     Write-Verbose -Message "Exporting Active Directory Group Policy Objects $(Get-Date -Format G)"
-    Write-Output "Exporting Active Directory Group Policy Objects $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "Exporting Active Directory Group Policy Objects $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     New-Item -Path "$Path\$domain\GroupPolicy" -ItemType Directory | Out-Null
     New-Item -Path "$Path\$domain\GroupPolicy\Reports" -ItemType Directory | Out-Null
     Get-GPO -All @credObject @domainObj | ForEach-Object {
@@ -286,13 +327,13 @@ function Get-ADAuditData {
     $gpos = (Get-ChildItem -Path "$Path\$domain\GroupPolicy\Reports" -Filter *.html).Count
 
     Write-Verbose -Message "$gpos Active Directory Group Policy Objects Exported $(Get-Date -Format G)"
-    Write-Output "$gpos Active Directory Group Policy Objects Exported $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "$gpos Active Directory Group Policy Objects Exported $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     $gpos = $null
     #endregion Export AD GPOs
 
     #region Export AD GPO Inheritance
     Write-Verbose -Message "Exporting Active Directory Group Policy Inheritance $(Get-Date -Format G)"
-    Write-Output "Exporting Active Directory Group Policy Inheritance $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "Exporting Active Directory Group Policy Inheritance $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     New-Item -Path "$Path\$domain\GroupPolicy\Inheritance" -ItemType Directory | Out-Null
     $domainGPI = Get-GPInheritance -Target $domain
     $domainGPI | Select-Object Name,ContainerType,Path,GpoInheritanceBlocked | Format-List | Out-File -FilePath "$Path\$domain\GroupPolicy\Inheritance\$domain.txt"
@@ -308,13 +349,13 @@ function Get-ADAuditData {
     $gpos = (Get-ChildItem -Path "$Path\$domain\GroupPolicy\Inheritance" -Filter *.txt).Count
 
     Write-Verbose -Message "$gpos Active Directory Group Policy Inheritance Exported $(Get-Date -Format G)"
-    Write-Output "$gpos Active Directory Group Policy Inheritance Exported $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "$gpos Active Directory Group Policy Inheritance Exported $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     $gpos = $null
     #endregion Export AD GPO Inheritance
 
     #region Export AD OU ACLs
     Write-Verbose -Message "Exporting Active Directory Organizational Unit Access Control Lists $(Get-Date -Format G)"
-    Write-Output "Exporting Active Directory Organizational Unit Access Control Lists $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "Exporting Active Directory Organizational Unit Access Control Lists $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     New-Item -Path "$Path\$domain\OU" -ItemType Directory | Out-Null
     New-Item -Path "$Path\$domain\OU\ACLs" -ItemType Directory | Out-Null
     # Special Thanks to Ashley McGlone for the heavy lifting here
@@ -361,13 +402,13 @@ function Get-ADAuditData {
     $ouCount = (Get-ChildItem -Path "$Path\$domain\OU\ACLs" -Filter *.csv).Count
 
     Write-Verbose -Message "$ouCount Active Directory Organizational Unit Access Control Lists Exported $(Get-Date -Format G)"
-    Write-Output "$ouCount Active Directory Organizational Unit Access Control Lists Exported $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "$ouCount Active Directory Organizational Unit Access Control Lists Exported $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     $ouCount = $null
     #endregion Export AD OU ACLs
 
     #region Export AD Confidentiality Bit
     Write-Verbose -Message "Exporting Active Directory Confidentiality Bit Details $(Get-Date -Format G)"
-    Write-Output "Exporting Active Directory Confidentiality Bit Details $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "Exporting Active Directory Confidentiality Bit Details $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     Get-ADObject -SearchBase "CN=Schema,CN=Configuration,$domain" -LDAPFilter '(searchFlags:1.2.840.113556.1.4.803:=128)' |
         Select-Object 'DistinguishedName','Name' |
         ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
@@ -381,21 +422,21 @@ function Get-ADAuditData {
     $rows--
 
     Write-Verbose -Message "$rows Active Directory Confidential Bit Details Exported $(Get-Date -Format G)"
-    Write-Output "$rows Active Directory Confidential Bit Details Exported $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "$rows Active Directory Confidential Bit Details Exported $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     $rows = $null
     #endregion Export AD Confidentiality Bit
 
     #region Export AD Default Domain Password Policy
     Write-Verbose -Message "Exporting Active Directory Default Domain Password Policy $(Get-Date -Format G)"
-    Write-Output "Exporting Active Directory Default Domain Password Policy $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
-    Get-ADDefaultDomainPasswordPolicy | Out-File -FilePath "$Path\$domain\$domain-defaultDomainPasswordPolicy.txt" -Encoding utf8
+    Write-Output "Exporting Active Directory Default Domain Password Policy $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
+    Get-ADDefaultDomainPasswordPolicy | Out-File -FilePath "$Path\$domain\$domain-defaultDomainPasswordPolicy.txt"
     Write-Verbose -Message "$rows Active Directory Default Domain Password Policy Exported $(Get-Date -Format G)"
-    Write-Output "$rows Active Directory Default Domain Password Policy Exported $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "$rows Active Directory Default Domain Password Policy Exported $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     #endregion Export AD Default Domain Password Policy
 
     #region Export AD FGPP
     Write-Verbose -Message "Exporting Active Directory Fine Grained Password Policies $(Get-Date -Format G)"
-    Write-Output "Exporting Active Directory Fine Grained Password Policies $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "Exporting Active Directory Fine Grained Password Policies $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     Get-ADFineGrainedPasswordPolicy -Filter * -Properties 'appliesTo','ComplexityEnabled','DistinguishedName','LockoutDuration','LockoutObservationWindow',
         'LockoutThreshold','MaxPasswordAge','MinPasswordAge','MinPasswordLength','Name','PasswordHistoryCount','Precedence','ReversibleEncryptionEnabled' |
         Select-Object 'DistinguishedName','Name',
@@ -413,13 +454,13 @@ function Get-ADAuditData {
     $rows--
 
     Write-Verbose -Message "$rows Active Directory Fine Grained Password Policies Exported $(Get-Date -Format G)"
-    Write-Output "$rows Active Directory Fine Grained Password Policies Exported $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "$rows Active Directory Fine Grained Password Policies Exported $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     $rows = $null
     #endregion Export AD FGPP
 
     #region Export AD Domain Trusts
     Write-Verbose -Message "Exporting Active Directory Domain Trusts $(Get-Date -Format G)"
-    Write-Output "Exporting Active Directory Domain Trusts $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "Exporting Active Directory Domain Trusts $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     Get-ADTrust -Filter * -Properties * |
         ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
         Out-File -FilePath "$Path\$domain\$domain-trustedDomains.csv" -Append
@@ -432,12 +473,12 @@ function Get-ADAuditData {
     $rows--
 
     Write-Verbose -Message "$rows Active Directory Domain Trusts Exported $(Get-Date -Format G)"
-    Write-Output "$rows Active Directory Domain Trusts Exported $(Get-Date -Format G)`n`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "$rows Active Directory Domain Trusts Exported $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     $rows = $null
     #endregion Export AD Domain Trusts
 
     Write-Verbose -Message "Finished Execution at $(Get-Date -Format G)"
-    Write-Output "Finished Execution at $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append
+    Write-Output "Finished Execution at $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
 
     if ((Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" -Name Release).Release -ge 394802) {
         Write-Verbose -Message "Compressing Output Data to Zip File $(Get-Date -Format G)"
