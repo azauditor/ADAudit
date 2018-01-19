@@ -199,9 +199,8 @@ function Get-ADAuditData {
         Out-File -FilePath "$Path\$domain\$domain-Info.csv" -Append
     Write-Verbose -Message "Active Directory Domain Information Exported $(Get-Date -Format G)"
     Write-Output "Active Directory Domain Information Exported $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
-        
     #endregion Export Domain Information
-    
+
     #region Export Forest Information
     Write-Verbose -Message "Exporting Active Directory Forest Information $(Get-Date -Format G)"
     Write-Output "Exporting Active Directory Forest Information $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
@@ -213,8 +212,8 @@ function Get-ADAuditData {
         Out-File -FilePath "$Path\$domain\$domain-ForestInfo.csv" -Append
     Write-Verbose -Message "Active Directory Forest Information Exported $(Get-Date -Format G)"
     Write-Output "Active Directory Forest Information Exported $(Get-Date -Format G)`r`n" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
-    #endregion Export Forest Information    
-    
+    #endregion Export Forest Information
+
     #region Export AD Users
     Write-Verbose -Message "Exporting Active Directory Users $(Get-Date -Format G)"
     Write-Output "Exporting Active Directory Users $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
@@ -283,10 +282,10 @@ function Get-ADAuditData {
     Write-Verbose -Message "Exporting Computer Accounts $(Get-Date -Format G)"
     Write-Output "Exporting Computer Accounts $(Get-Date -Format G)" | Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     Get-ADComputer -Filter * -Properties 'cn','description','displayName','distinguishedName','LastLogonDate','name','objectSid','operatingSystem','operatingSystemServicePack',
-        'operatingSystemVersion','primaryGroupID','PasswordLastSet','relativeIdentifier','userAccountControl','whenChanged' |
+        'operatingSystemVersion','primaryGroupID','PasswordLastSet','userAccountControl','whenCreated','whenChanged' |
         Select-Object 'cn','description','displayName','distinguishedName','LastLogonDate','name','objectSid',
         'operatingSystem','operatingSystemServicePack','operatingSystemVersion','primaryGroupID','PasswordLastSet',
-        @{Name='userAccountControl';Expression={(ConvertFrom-UAC($_.userAccountControl))}},'whenChanged' |
+        @{Name='userAccountControl';Expression={(ConvertFrom-UAC($_.userAccountControl))}},'whenCreated','whenChanged' |
         ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
         Out-File -FilePath "$Path\$domain\$domain-Computers.csv" -Append
     Write-Verbose -Message "Active Directory Computers Exported $(Get-Date -Format G)"
