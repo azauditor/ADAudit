@@ -6,7 +6,7 @@ The scripts on this page were compiled by the Alex Entringer from the work and r
 
 ## Querying an Active Directory Domain
 
-1. Download the [file](https://github.com/aentringer/ADAudit/blob/master/PowerShell/Get-ADAuditData.ps1 "Get-ADAuditData.ps1") from the ['PowerShell' folder](https://github.com/aentringer/ADAudit/tree/master/PowerShell) in this repository (.zip) or clone the repository
+1. Download the [file](https://github.com/aentringer/ADAudit/raw/master/PowerShell/Get-ADAuditData.ps1 "Get-ADAuditData.ps1") from the ['PowerShell' folder](https://github.com/aentringer/ADAudit/tree/master/PowerShell) in this repository (.zip) or clone the repository
 1. Open PowerShell either directly on server or on a management workstation with RSAT installed.
     * **If running directly on server, you should run from an Administrative PowerShell Prompt (Avoids UAC issues).**
 1. Import Functions: . .\Get-ADAuditData.ps1
