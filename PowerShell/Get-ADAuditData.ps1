@@ -345,7 +345,7 @@ function Get-ADAuditData {
 
     # Count Rows for reporting
     $rows = 0
-    $reader = New-Object IO.StreamReader "$Path\$domain\$domain-OUs.csv"
+    $reader = New-Object IO.StreamReader "$Path\$domain\$domain-Computers.csv"
     while ($reader.ReadLine() -ne $null) { $rows++ }
     $reader.Close()
     $rows--
