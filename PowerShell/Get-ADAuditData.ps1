@@ -342,8 +342,19 @@ function Get-ADAuditData {
         'whenCreated','whenChanged' |
         ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
         Out-File -FilePath "$Path\$domain\$domain-Computers.csv" -Append
-    Write-Verbose -Message "Active Directory Computers Exported $(Get-Date -Format G)"
-    Write-Output "Active Directory Computers Exported $(Get-Date -Format G)`r`n" |
+
+    # Count Rows for reporting
+    $rows = 0
+    $reader = New-Object IO.StreamReader "$Path\$domain\$domain-OUs.csv"
+    while ($reader.ReadLine() -ne $null) { $rows++ }
+    $reader.Close()
+    $rows--
+    if ($rows -lt 0) {
+        $rows = 0
+    }
+
+    Write-Verbose -Message "$rows Active Directory Computers Exported $(Get-Date -Format G)"
+    Write-Output "$rows Active Directory Computers Exported $(Get-Date -Format G)`r`n" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     #endregion Export AD Computers
 
