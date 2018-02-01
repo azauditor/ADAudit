@@ -361,7 +361,7 @@ function Get-ADAuditData {
 
     #region Export AD OUs
     Write-Verbose -Message "Exporting Active Directory Organizational Units $(Get-Date -Format G)"
-    Write-Output "Exporting Active Directory Organizational Units $(Get-Date -Format G)`r`n" |
+    Write-Output "Exporting Active Directory Organizational Units $(Get-Date -Format G)" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     Get-ADOrganizationalUnit -Filter * -Properties 'DistinguishedName','Name','CanonicalName','DisplayName',
         'Description','whenCreated','whenChanged','ManagedBy' |
@@ -407,8 +407,8 @@ function Get-ADAuditData {
     #endregion Export AD GPOs
 
     #region Export AD GPO Inheritance
-    Write-Verbose -Message "Exporting Active Directory Group Policy Inheritance $(Get-Date -Format G)"
-    Write-Output "Exporting Active Directory Group Policy Inheritance $(Get-Date -Format G)" |
+    Write-Verbose -Message "Exporting Active Directory GPO Inheritance Configurations $(Get-Date -Format G)"
+    Write-Output "Exporting Active Directory GPO Inheritance Configurations $(Get-Date -Format G)" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     New-Item -Path "$Path\$domain\GroupPolicy\Inheritance" -ItemType Directory | Out-Null
     $domainGPI = Get-GPInheritance -Target $domain
@@ -428,8 +428,8 @@ function Get-ADAuditData {
     # Count Inheritance files for reporting
     $gpos = (Get-ChildItem -Path "$Path\$domain\GroupPolicy\Inheritance" -Filter *.txt).Count
 
-    Write-Verbose -Message "$gpos Active Directory Group Policy Inheritance Exported $(Get-Date -Format G)"
-    Write-Output "$gpos Active Directory Group Policy Inheritance Exported $(Get-Date -Format G)`r`n" |
+    Write-Verbose -Message "$gpos Active Directory GPO Inheritance Configurations Exported $(Get-Date -Format G)"
+    Write-Output "$gpos Active Directory GPO Inheritance Configurations Exported $(Get-Date -Format G)`r`n" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     $gpos = $null
     #endregion Export AD GPO Inheritance
@@ -519,8 +519,8 @@ function Get-ADAuditData {
     Write-Output "Exporting Active Directory Default Domain Password Policy $(Get-Date -Format G)" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     Get-ADDefaultDomainPasswordPolicy | Out-File -FilePath "$Path\$domain\$domain-defaultDomainPasswordPolicy.txt"
-    Write-Verbose -Message "$rows Active Directory Default Domain Password Policy Exported $(Get-Date -Format G)"
-    Write-Output "$rows Active Directory Default Domain Password Policy Exported $(Get-Date -Format G)`r`n" |
+    Write-Verbose -Message "Active Directory Default Domain Password Policy Exported $(Get-Date -Format G)"
+    Write-Output "Active Directory Default Domain Password Policy Exported $(Get-Date -Format G)`r`n" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     #endregion Export AD Default Domain Password Policy
 
