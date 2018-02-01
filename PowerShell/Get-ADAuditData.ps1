@@ -287,6 +287,9 @@ function Get-ADAuditData {
     while ($reader.ReadLine() -ne $null) { $rows++ }
     $reader.Close()
     $rows--
+    if ($rows -lt 0) {
+        $rows = 0
+    }
 
     Write-Verbose -Message "$rows Active Directory Users Exported $(Get-Date -Format G)"
     Write-Output "$rows Active Directory Users Exported $(Get-Date -Format G)`r`n" |
@@ -322,6 +325,9 @@ function Get-ADAuditData {
     while ($reader.ReadLine() -ne $null) { $rows++ }
     $reader.Close()
     $rows--
+    if ($rows -lt 0) {
+        $rows = 0
+    }
 
     Write-Verbose -Message "$rows Active Directory Groups Exported $(Get-Date -Format G)"
     Write-Output "$rows Active Directory Groups Exported $(Get-Date -Format G)`r`n" |
@@ -370,6 +376,9 @@ function Get-ADAuditData {
     while ($reader.ReadLine() -ne $null) { $rows++ }
     $reader.Close()
     $rows--
+    if ($rows -lt 0) {
+        $rows = 0
+    }
 
     Write-Verbose -Message "$rows Active Directory OUs Exported $(Get-Date -Format G)"
     Write-Output "$rows Active Directory OUs Exported $(Get-Date -Format G)`r`n" |
@@ -495,6 +504,9 @@ function Get-ADAuditData {
     while ($reader.ReadLine() -ne $null) { $rows++ }
     $reader.Close()
     $rows--
+    if ($rows -lt 0) {
+        $rows = 0
+    }
 
     Write-Verbose -Message "$rows Active Directory Confidential Bit Details Exported $(Get-Date -Format G)"
     Write-Output "$rows Active Directory Confidential Bit Details Exported $(Get-Date -Format G)`r`n" |
@@ -533,6 +545,9 @@ function Get-ADAuditData {
     while ($reader.ReadLine() -ne $null) { $rows++ }
     $reader.Close()
     $rows--
+    if ($rows -lt 0) {
+        $rows = 0
+    }
 
     Write-Verbose -Message "$rows Active Directory Fine Grained Password Policies Exported $(Get-Date -Format G)"
     Write-Output "$rows Active Directory Fine Grained Password Policies Exported $(Get-Date -Format G)`r`n" |
@@ -554,6 +569,9 @@ function Get-ADAuditData {
     while ($reader.ReadLine() -ne $null) { $rows++ }
     $reader.Close()
     $rows--
+    if ($rows -lt 0) {
+        $rows = 0
+    }
 
     Write-Verbose -Message "$rows Active Directory Domain Trusts Exported $(Get-Date -Format G)"
     Write-Output "$rows Active Directory Domain Trusts Exported $(Get-Date -Format G)`r`n" |
