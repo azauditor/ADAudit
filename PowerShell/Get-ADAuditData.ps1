@@ -304,7 +304,7 @@ function Get-ADAuditData {
             @{Name="memberOf";Expression={(($_.memberof -split (",") | Select-String -AllMatches "CN=") -join ", ") -replace "CN=" -replace "" }},
             'objectSID',
             @{Name="msDS-PSOApplied";Expression={((($_.'msDS-PSOApplied' -join (";"))) -replace ",CN=Password Settings Container,CN=System,$domain" -replace "" ) -replace "CN=" -replace "" }},
-            @{Name='relativeIdentifer';Expression={($_.SID.Value).Split('-')[-1]}},'whenCreated','whenChanged' |
+            @{Name='relativeIdentifier';Expression={($_.SID.Value).Split('-')[-1]}},'whenCreated','whenChanged' |
         ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
         Out-File -FilePath "$Path\$domain\$domain-Groups.csv" -Append
 
