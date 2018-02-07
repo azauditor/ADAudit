@@ -259,7 +259,7 @@ function Get-ADAuditData {
             @{Name='o';Expression={$_.o -join ';'}},'objectSid',
             @{Name='ou';Expression={$_.ou -join ';'}},'PasswordLastSet','PasswordExpired',
             'personalTitle','primaryGroupID','sAMAccountName',
-            @{Name='relativeIdentifer';Expression={($_.SID.Value).Split('-')[-1]}},
+            @{Name='relativeIdentifier';Expression={($_.SID.Value).Split('-')[-1]}},
             @{Name='secretary';Expression={$_.secretary -join ';'}},
             @{Name='seeAlso';Expression={$_.seeAlso -join ';'}},
             @{Name='servicePrincipalName';Expression={$_.servicePrincipalName -join ';'}},
