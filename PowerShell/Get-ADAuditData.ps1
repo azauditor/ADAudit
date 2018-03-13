@@ -229,7 +229,7 @@ function Get-ADAuditData {
         'givenName','info','LastLogonDate','mail','managedObjects','manager','memberOf','middleName',
         'msDS-AllowedToDelegateTo','msDS-PSOApplied','msDS-ResultantPSO','msDS-SourceObjectDN',
         'msDS-User-Account-Control-Computed','msDS-UserPasswordExpiryTimeComputed','name','o','objectSid','ou',
-        'PasswordLastSet','PasswordExpired','personalTitle','primaryGroupID','sAMAccountName','secretary',
+        'PasswordLastSet','PasswordExpired','personalTitle','primaryGroupID','sAMAccountName',
         'seeAlso','servicePrincipalName','sIDHistory','sn','title','uid','uidNumber','userAccountControl',
         'userWorkstations','whenChanged','whenCreated' |
         Select-Object 'accountExpirationDate','adminCount','assistant','canonicalName','cn',
@@ -260,7 +260,6 @@ function Get-ADAuditData {
             @{Name='ou';Expression={$_.ou -join ';'}},'PasswordLastSet','PasswordExpired',
             'personalTitle','primaryGroupID','sAMAccountName',
             @{Name='relativeIdentifier';Expression={($_.SID.Value).Split('-')[-1]}},
-            @{Name='secretary';Expression={$_.secretary -join ';'}},
             @{Name='seeAlso';Expression={$_.seeAlso -join ';'}},
             @{Name='servicePrincipalName';Expression={$_.servicePrincipalName -join ';'}},
             @{Name='sIDHistory';Expression={$_.sIDHistory -join ';'}},
