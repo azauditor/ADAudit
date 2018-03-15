@@ -557,7 +557,7 @@ function Get-ADAuditData {
     Write-Verbose -Message "Exporting Active Directory Domain Trusts $(Get-Date -Format G)"
     Write-Output "Exporting Active Directory Domain Trusts $(Get-Date -Format G)" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
-    if (Get-Command Get-ADTrust) {
+    if (Get-Command Get-ADTrust -ErrorAction SilentlyContinue) {
         Get-ADTrust -Filter * -Properties * |
             ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
             Out-File -FilePath "$Path\$domain\$domain-trustedDomains.csv" -Append
@@ -577,7 +577,7 @@ function Get-ADAuditData {
         $rows = $null
     }
     else {
-        Write-Warning -Message "$rows Active Directory Domain Trusts Exported $(Get-Date -Format G)"
+        Write-Warning -Message "Get-ADTrust cmdlet Not Available $(Get-Date -Format G)"
         Write-Output "WARNING: Get-ADTrust Not Available $(Get-Date -Format G)" |
             Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     }
