@@ -594,7 +594,8 @@ function Get-ADAuditData {
     Get-ADDefaultDomainPasswordPolicy | Select-Object -Property PasswordHistoryCount, MaxPasswordAge, MinPasswordAge,
         MinPasswordLength, ComplexityEnabled, ReversibleEncryptionEnabled, LockoutDuration, LockoutThreshold,
         LockoutObservationWindow, DistinguishedName, objectClass |
-    Out-File -FilePath "$Path\$domain\$domain-defaultDomainPasswordPolicy.txt"
+    ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
+    Out-File -FilePath "$Path\$domain\$domain-defaultDomainPasswordPolicy" -Append
     Write-Verbose -Message "Active Directory Default Domain Password Policy Exported $(Get-Date -Format G)"
     Write-Output "Active Directory Default Domain Password Policy Exported $(Get-Date -Format G)`r`n" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
