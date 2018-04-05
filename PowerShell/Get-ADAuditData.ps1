@@ -127,6 +127,81 @@ function ConvertFrom-UACComputed {
     return $newValue
 }
 
+function ConvertFrom-trustDirection {
+    param(
+        [Parameter(Mandatory=$True, Position=0, ValueFromPipeline=$true)]
+        $Value
+    )
+    $trustDirect = @{
+        0 = 'Disabled (The Trust relationship exists but has been disabled)'
+        1 = 'Inbound (One-Way Trust) (TrustING Domain): This is a trusting domain or forest. The other domain or forest has access to the resources of this domain or forest. This domain or forest does not have access to resources that belong to the other domain or forest.'
+        2 = 'Outbound (One-Way Trust) (TrustED Domain): This is a trusted domain or forest. This domain or forest has access to resources of the other domain or forest. The other domain or forest does not have access to the resources of this domain or forest.'
+        3 = 'Bidirectional (Two-Way Trust): Each domain or forest has access to the resources of the other domain or forest.'
+    }
+
+    if ($trustDirect.ContainsKey($Value)) {
+        $newValue = $trustDirect[$Value]
+    }
+    else{
+        $newValue = 'Unknown Trust Direction'
+    }
+    return $newValue
+}
+
+function ConvertFrom-trustType {
+    param(
+        [Parameter(Mandatory=$True, Position=0, ValueFromPipeline=$true)]
+        $Value
+    )
+    $trustType = @{
+        1 = 'Downlevel Trust (This trust is with a Windows NT Domain (Being External)'
+        2 = 'Uplevel (Windows 2000 or later) Trust.  This trust is with an Active Directory domain (being parent-child, root domain, shortcut, external, or forest).'
+        3 = 'MIT. This trust is with a (non-Windows) MIT Kerberos Version 5 Realm'
+        4 = 'DCE. This trust is with a DCE realm.  DCE refers to Open Groups Distributed Computing Environment specification. This trust type is mainly theoretical)'
+    }
+
+    if ($trustDirect.ContainsKey($Value)) {
+        $newValue = $trustDirect[$Value]
+    }
+    else{
+        $newValue = 'Unknown Trust Type'
+    }
+    return $newValue
+}
+
+function ConvertFrom-trustAttribute {
+    param(
+        [Parameter(Mandatory=$True, Position=0, ValueFromPipeline=$true)]
+        $Value
+    )
+    $trustAttribute = @{
+        0 = 'Non-Verifiable Trust (Ask Agency about this!)'
+        1 = 'Non-Transitive Trust (Disable transitivity)'
+        2 = 'Up-level Trust (Windows 2000 and newer can use link)'
+        4 = 'Quarantined Domain External Trust (SID Filtering Enabled)'
+        8 = 'Forest Transitive Trust'
+        10 = 'Cross-Organizational Trust (Selective Authentication)'
+        16 = 'This is a "cross-org" trust with Selective Authentication enabled'
+        20 = 'Intra-Forest Trust (Trust within the Forest)'
+        32 = 'Forest-Internal'
+        40 = 'Treat As External'
+        64 = 'This is a forest trust with SIDHistory enabled'
+        68 = 'Quarantined Domain (External)'
+        80 = 'Trust Attribute Uses RC4 Encryption'
+        200 = 'Trust Attribute Cross Organization No TGT Delegation'
+        400 = 'PIM (Privleged Identity Management) Trust'
+        40000 = 'Tree Parent (Obsolete)'
+        80000 = 'Tree Root (Obsolete)'
+    }
+
+    if ($trustAttribute.ContainsKey($Value)) {
+        $newValue = $trustAttribute[$Value]
+    }
+    else{
+        $newValue = 'Unknown Trust Attribute'
+    }
+    return $newValue
+}
 
 function Get-ADAuditData {
     <#
@@ -560,8 +635,25 @@ function Get-ADAuditData {
     Write-Verbose -Message "Exporting Active Directory Domain Trusts $(Get-Date -Format G)"
     Write-Output "Exporting Active Directory Domain Trusts $(Get-Date -Format G)" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
-    if (Get-Command Get-ADTrust -ErrorAction SilentlyContinue) {
-        Get-ADTrust -Filter * -Properties * |
+        if (Get-Command Get-ADTrust -ErrorAction SilentlyContinue) {
+            Get-ADTrust -Filter * -Properties 'CanonicalName', 'CN', 'Created', 'createTimeStamp', 'Deleted', 'Description', 'DisallowTransivity',
+            'DisplayName', 'DistinguishedName', 'flatName', 'ForestTransitive', 'instanceType', 'IntraForest', 'isCriticalSystemObject', 'isDeleted',
+            'isTreeParent', 'IsTreeRoot', 'LastKnownParent', 'Modified', 'modifyTimeStamp', 'Name', 'ObjectCategory', 'ObjectClass', 'ObjectGUID',
+            'ProtectedFromAccidentalDeletion', 'sDRightsEffective', 'securityIdentifier', 'SelectiveAuthentication', 'showInAdvancedViewOnly',
+            'SIDFilteringForestAware', 'SIDFilteringQuarantined', 'Source', 'Target', 'TGTDelegation', 'TrustAttributes', 'trustDirection',
+            'TrustingPolicy', 'trustPartner', 'trustPosixOffset', 'TrustType', 'UplevelOnly', 'UsesAESKeys', 'UsesRC4Encryption', 'uSNChanged',
+            'uSNCreated', 'whenChanged', 'whenCreated' |
+                Select-Object 'CanonicalName', 'CN', 'Created', 'createTimeStamp', 'Deleted', 'Description', 'DisallowTransivity',
+                'DisplayName', 'DistinguishedName', 'flatName', 'ForestTransitive', 'instanceType', 'IntraForest', 'isCriticalSystemObject', 'isDeleted',
+                'isTreeParent', 'IsTreeRoot', 'LastKnownParent', 'Modified', 'modifyTimeStamp', 'Name', 'ObjectCategory', 'ObjectClass', 'ObjectGUID',
+                'ProtectedFromAccidentalDeletion', 'sDRightsEffective', 'securityIdentifier', 'SelectiveAuthentication', 'showInAdvancedViewOnly',
+                'SIDFilteringForestAware', 'SIDFilteringQuarantined', 'Source', 'Target', 'TGTDelegation', 
+                @{Name='TrustAttributes';Expression={(ConvertFrom-trustAttribute($_.TrustAttributes))}},
+                @{Name='trustDirection';Expression={(ConvertFrom-trustDirection($_.trustDirection))}},
+                'TrustingPolicy', 'trustPartner', 'trustPosixOffset', 
+                @{Name='TrustType';Expression={(ConvertFrom-trustType($_.TrustType))}},
+                'UplevelOnly', 'UsesAESKeys', 'UsesRC4Encryption', 'uSNChanged',
+                'uSNCreated', 'whenChanged', 'whenCreated' |
             ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
             Out-File -FilePath "$Path\$domain\$domain-trustedDomains.csv" -Append
 
