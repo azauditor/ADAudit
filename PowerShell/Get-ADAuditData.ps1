@@ -229,7 +229,7 @@ function Get-ADAuditData {
         'givenName','info','LastLogonDate','mail','managedObjects','manager','memberOf','middleName',
         'msDS-AllowedToDelegateTo','msDS-PSOApplied','msDS-ResultantPSO','msDS-SourceObjectDN',
         'msDS-User-Account-Control-Computed','msDS-UserPasswordExpiryTimeComputed','name','o','objectSid','ou',
-        'PasswordLastSet','PasswordExpired','personalTitle','primaryGroupID','sAMAccountName','secretary',
+        'PasswordLastSet','PasswordExpired','personalTitle','primaryGroupID','sAMAccountName',
         'seeAlso','servicePrincipalName','sIDHistory','sn','title','uid','uidNumber','userAccountControl',
         'userWorkstations','whenChanged','whenCreated' |
         Select-Object 'accountExpirationDate','adminCount','assistant','canonicalName','cn',
@@ -260,7 +260,6 @@ function Get-ADAuditData {
             @{Name='ou';Expression={$_.ou -join ';'}},'PasswordLastSet','PasswordExpired',
             'personalTitle','primaryGroupID','sAMAccountName',
             @{Name='relativeIdentifier';Expression={($_.SID.Value).Split('-')[-1]}},
-            @{Name='secretary';Expression={$_.secretary -join ';'}},
             @{Name='seeAlso';Expression={$_.seeAlso -join ';'}},
             @{Name='servicePrincipalName';Expression={$_.servicePrincipalName -join ';'}},
             @{Name='sIDHistory';Expression={$_.sIDHistory -join ';'}},
@@ -561,31 +560,37 @@ function Get-ADAuditData {
     Write-Verbose -Message "Exporting Active Directory Domain Trusts $(Get-Date -Format G)"
     Write-Output "Exporting Active Directory Domain Trusts $(Get-Date -Format G)" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
-    Get-ADTrust -Filter * -Properties * |
-        ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
-        Out-File -FilePath "$Path\$domain\$domain-trustedDomains.csv" -Append
+    if (Get-Command Get-ADTrust -ErrorAction SilentlyContinue) {
+        Get-ADTrust -Filter * -Properties * |
+            ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
+            Out-File -FilePath "$Path\$domain\$domain-trustedDomains.csv" -Append
 
-    # Count Rows for reporting
-    $rows = 0
-    $reader = New-Object IO.StreamReader "$Path\$domain\$domain-trustedDomains.csv"
-    while ($reader.ReadLine() -ne $null) { $rows++ }
-    $reader.Close()
-    $rows--
-    if ($rows -lt 0) {
+        # Count Rows for reporting
         $rows = 0
+        $reader = New-Object IO.StreamReader "$Path\$domain\$domain-trustedDomains.csv"
+        while ($reader.ReadLine() -ne $null) { $rows++ }
+        $reader.Close()
+        $rows--
+        if ($rows -lt 0) {
+            $rows = 0
+        }
+        Write-Verbose -Message "$rows Active Directory Domain Trusts Exported $(Get-Date -Format G)"
+        Write-Output "$rows Active Directory Domain Trusts Exported $(Get-Date -Format G)`r`n" |
+            Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
+        $rows = $null
     }
-
-    Write-Verbose -Message "$rows Active Directory Domain Trusts Exported $(Get-Date -Format G)"
-    Write-Output "$rows Active Directory Domain Trusts Exported $(Get-Date -Format G)`r`n" |
-        Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
-    $rows = $null
+    else {
+        Write-Warning -Message "Get-ADTrust cmdlet Not Available $(Get-Date -Format G)"
+        Write-Output "WARNING: Get-ADTrust Not Available $(Get-Date -Format G)" |
+            Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
+    }
     #endregion Export AD Domain Trusts
 
     Write-Verbose -Message "Finished Execution at $(Get-Date -Format G)"
     Write-Output "Finished Execution at $(Get-Date -Format G)" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
 
-    if ((Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" -Name Release).Release -ge 394802) {
+    if ((Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" -Name Release -ErrorAction SilentlyContinue).Release -ge 394802) {
         Write-Verbose -Message "Compressing Output Data to Zip File $(Get-Date -Format G)"
         New-ZipFile -Path "$Path\$domain.zip" -Source "$Path\$domain"
         Write-Verbose -Message "Output Data Compressed to Zip File $(Get-Date -Format G)"
