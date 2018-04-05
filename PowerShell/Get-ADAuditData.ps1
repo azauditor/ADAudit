@@ -517,7 +517,10 @@ function Get-ADAuditData {
     Write-Verbose -Message "Exporting Active Directory Default Domain Password Policy $(Get-Date -Format G)"
     Write-Output "Exporting Active Directory Default Domain Password Policy $(Get-Date -Format G)" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
-    Get-ADDefaultDomainPasswordPolicy | Out-File -FilePath "$Path\$domain\$domain-defaultDomainPasswordPolicy.txt"
+    Get-ADDefaultDomainPasswordPolicy | Select-Object -Property PasswordHistoryCount, MaxPasswordAge, MinPasswordAge,
+        MinPasswordLength, ComplexityEnabled, ReversibleEncryptionEnabled, LockoutDuration, LockoutThreshold,
+        LockoutObservationWindow, DistinguishedName, objectClass |
+    Out-File -FilePath "$Path\$domain\$domain-defaultDomainPasswordPolicy.txt"
     Write-Verbose -Message "Active Directory Default Domain Password Policy Exported $(Get-Date -Format G)"
     Write-Output "Active Directory Default Domain Password Policy Exported $(Get-Date -Format G)`r`n" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
