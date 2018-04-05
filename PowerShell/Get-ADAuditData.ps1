@@ -160,8 +160,8 @@ function ConvertFrom-trustType {
         4 = 'DCE. This trust is with a DCE realm.  DCE refers to Open Groups Distributed Computing Environment specification. This trust type is mainly theoretical)'
     }
 
-    if ($trustDirect.ContainsKey($Value)) {
-        $newValue = $trustDirect[$Value]
+    if ($trustType.ContainsKey($Value)) {
+        $newValue = $trustType[$Value]
     }
     else{
         $newValue = 'Unknown Trust Type'
@@ -593,9 +593,9 @@ function Get-ADAuditData {
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     Get-ADDefaultDomainPasswordPolicy | Select-Object -Property PasswordHistoryCount, MaxPasswordAge, MinPasswordAge,
         MinPasswordLength, ComplexityEnabled, ReversibleEncryptionEnabled, LockoutDuration, LockoutThreshold,
-        LockoutObservationWindow, DistinguishedName, objectClass |
-    ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
-    Out-File -FilePath "$Path\$domain\$domain-defaultDomainPasswordPolicy" -Append
+        LockoutObservationWindow, DistinguishedName |
+        ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', '' } |
+        Out-File -FilePath "$Path\$domain\$domain-defaultDomainPasswordPolicy.csv" -Append
     Write-Verbose -Message "Active Directory Default Domain Password Policy Exported $(Get-Date -Format G)"
     Write-Output "Active Directory Default Domain Password Policy Exported $(Get-Date -Format G)`r`n" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
@@ -613,7 +613,7 @@ function Get-ADAuditData {
             'PasswordHistoryCount','MaxPasswordAge','MinPasswordAge','MinPasswordLength','ComplexityEnabled',
             'ReversibleEncryptionEnabled','LockoutDuration','LockoutThreshold','LockoutObservationWindow',
             'Precedence' |
-        ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
+        ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', '' } |
         Out-File -FilePath "$Path\$domain\$domain-fgppDetails.csv" -Append
 
     # Count Rows for reporting
@@ -637,24 +637,28 @@ function Get-ADAuditData {
     Write-Output "Exporting Active Directory Domain Trusts $(Get-Date -Format G)" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
         if (Get-Command Get-ADTrust -ErrorAction SilentlyContinue) {
-            Get-ADTrust -Filter * -Properties 'CanonicalName', 'CN', 'Created', 'createTimeStamp', 'Deleted', 'Description', 'DisallowTransivity',
-            'DisplayName', 'DistinguishedName', 'flatName', 'ForestTransitive', 'instanceType', 'IntraForest', 'isCriticalSystemObject', 'isDeleted',
-            'isTreeParent', 'IsTreeRoot', 'LastKnownParent', 'Modified', 'modifyTimeStamp', 'Name', 'ObjectCategory', 'ObjectClass', 'ObjectGUID',
-            'ProtectedFromAccidentalDeletion', 'sDRightsEffective', 'securityIdentifier', 'SelectiveAuthentication', 'showInAdvancedViewOnly',
-            'SIDFilteringForestAware', 'SIDFilteringQuarantined', 'Source', 'Target', 'TGTDelegation', 'TrustAttributes', 'trustDirection',
-            'TrustingPolicy', 'trustPartner', 'trustPosixOffset', 'TrustType', 'UplevelOnly', 'UsesAESKeys', 'UsesRC4Encryption', 'uSNChanged',
-            'uSNCreated', 'whenChanged', 'whenCreated' |
-                Select-Object 'CanonicalName', 'CN', 'Created', 'createTimeStamp', 'Deleted', 'Description', 'DisallowTransivity',
-                'DisplayName', 'DistinguishedName', 'flatName', 'ForestTransitive', 'instanceType', 'IntraForest', 'isCriticalSystemObject', 'isDeleted',
-                'isTreeParent', 'IsTreeRoot', 'LastKnownParent', 'Modified', 'modifyTimeStamp', 'Name', 'ObjectCategory', 'ObjectClass', 'ObjectGUID',
-                'ProtectedFromAccidentalDeletion', 'sDRightsEffective', 'securityIdentifier', 'SelectiveAuthentication', 'showInAdvancedViewOnly',
-                'SIDFilteringForestAware', 'SIDFilteringQuarantined', 'Source', 'Target', 'TGTDelegation', 
+            Get-ADTrust -Filter * -Properties 'CanonicalName', 'CN', 'Created', 'createTimeStamp', 'Deleted',
+            'Description', 'DisallowTransivity','DisplayName', 'DistinguishedName', 'flatName', 'ForestTransitive',
+            'instanceType', 'IntraForest', 'isCriticalSystemObject', 'isDeleted', 'isTreeParent', 'IsTreeRoot',
+            'LastKnownParent', 'Modified', 'modifyTimeStamp', 'Name', 'ObjectCategory', 'ObjectClass',
+            'ObjectGUID', 'ProtectedFromAccidentalDeletion', 'sDRightsEffective', 'securityIdentifier',
+            'SelectiveAuthentication', 'showInAdvancedViewOnly', 'SIDFilteringForestAware',
+            'SIDFilteringQuarantined', 'Source', 'Target', 'TGTDelegation', 'TrustAttributes', 'trustDirection',
+            'TrustingPolicy', 'trustPartner', 'trustPosixOffset', 'TrustType', 'UplevelOnly', 'UsesAESKeys',
+            'UsesRC4Encryption', 'uSNChanged', 'uSNCreated', 'whenChanged', 'whenCreated' |
+                Select-Object 'CanonicalName', 'CN', 'Created', 'createTimeStamp', 'Deleted', 'Description',
+                'DisallowTransivity', 'DisplayName', 'DistinguishedName', 'flatName', 'ForestTransitive',
+                'instanceType', 'IntraForest', 'isCriticalSystemObject', 'isDeleted', 'isTreeParent', 'IsTreeRoot',
+                'LastKnownParent', 'Modified', 'modifyTimeStamp', 'Name', 'ObjectCategory', 'ObjectClass',
+                'ObjectGUID', 'ProtectedFromAccidentalDeletion', 'sDRightsEffective', 'securityIdentifier',
+                'SelectiveAuthentication', 'showInAdvancedViewOnly', 'SIDFilteringForestAware',
+                'SIDFilteringQuarantined', 'Source', 'Target', 'TGTDelegation', 
                 @{Name='TrustAttributes';Expression={(ConvertFrom-trustAttribute($_.TrustAttributes))}},
                 @{Name='trustDirection';Expression={(ConvertFrom-trustDirection($_.trustDirection))}},
                 'TrustingPolicy', 'trustPartner', 'trustPosixOffset', 
                 @{Name='TrustType';Expression={(ConvertFrom-trustType($_.TrustType))}},
-                'UplevelOnly', 'UsesAESKeys', 'UsesRC4Encryption', 'uSNChanged',
-                'uSNCreated', 'whenChanged', 'whenCreated' |
+                'UplevelOnly', 'UsesAESKeys', 'UsesRC4Encryption', 'uSNChanged', 'uSNCreated', 'whenChanged',
+                'whenCreated' |
             ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
             Out-File -FilePath "$Path\$domain\$domain-trustedDomains.csv" -Append
 
