@@ -307,7 +307,9 @@ function Get-ADAuditData {
         'PasswordLastSet','PasswordExpired','personalTitle','primaryGroupID','sAMAccountName',
         'seeAlso','servicePrincipalName','sIDHistory','sn','title','uid','uidNumber','userAccountControl',
         'userWorkstations','whenChanged','whenCreated' |
-        Select-Object 'accountExpirationDate','adminCount','assistant','canonicalName','cn',
+        Select-Object 'accountExpirationDate','adminCount','assistant',
+            @{Name='canonicalName';Expression={Remove-InvalidFileNameChars($_.canonicalName)}},
+            @{Name='cn';Expression={Remove-InvalidFileNameChars($_.cn)}},
             @{Name='comment';Expression={Remove-InvalidFileNameChars($_.comment)}},
             'company',
             @{Name='controlAccessRights';Expression={$_.controlAccessRights -join ';'}},
@@ -370,7 +372,8 @@ function Get-ADAuditData {
         'GroupCategory','GroupScope','ManagedBy', 'memberOf','objectSID','msDS-PSOApplied','whenCreated',
         'whenChanged' |
         Select-Object 'distinguishedName',
-            'sAMAccountName','CN',
+            'sAMAccountName',
+            @{Name='CN';Expression={Remove-InvalidFileNameChars($_.CN)}},
             @{Name='displayName';Expression={Remove-InvalidFileNameChars($_.displayName)}},
             @{Name='name';Expression={Remove-InvalidFileNameChars($_.name)}},
             @{Name='description';Expression={Remove-InvalidFileNameChars($_.description)}},
