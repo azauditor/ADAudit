@@ -278,7 +278,7 @@ function Get-ADAuditData {
     Write-Output "Starting Execution at $(Get-Date -Format G)`r`n" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Encoding utf8
 
-    Write-Output "Path parameter: '$Path\$domain'`r`n" |
+    Write-Output "Path parameter: '$Path\$domain'" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
 
     Write-Output "SearchBase parameter: '$SearchBase'`r`n" |
