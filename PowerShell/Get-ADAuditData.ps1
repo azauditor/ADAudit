@@ -279,10 +279,10 @@ function Get-ADAuditData {
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Encoding utf8
 
     Write-Output "Path parameter: '$Path\$domain'`r`n" |
-        Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Encoding utf8
+        Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
 
     Write-Output "SearchBase parameter: '$SearchBase'`r`n" |
-        Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Encoding utf8
+        Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
 
     #region Export Domain Information
     Write-Verbose -Message "[$(Get-Date -Format G)]  Exporting Active Directory Domain Information" -Verbose
