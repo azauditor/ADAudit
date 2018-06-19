@@ -251,7 +251,7 @@ function Get-ADAuditData {
         [ValidateScript({Test-Path $_ -PathType 'Container'})]
         $Path = "$env:USERPROFILE\Desktop",
         [Parameter(Position=1, ValueFromPipeline=$true)]
-        $SearchBase = $(Get-ADRootDSE | Select-Object 'defaultNamingContext')
+        $SearchBase = $(Get-ADRootDSE | Select-Object 'defaultNamingContext').defaultNamingContext
     )
     #Requires -Version 3.0
     #Requires -Modules ActiveDirectory, GroupPolicy
