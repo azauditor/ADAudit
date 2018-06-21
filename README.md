@@ -11,8 +11,28 @@ The scripts on this page were compiled by from the work and research of others. 
     * **If running directly on server, you should run from an Administrative PowerShell Prompt (Avoids UAC issues).**
 1. Import Functions: . .\Get-ADAuditData.ps1
     * *The extra dot (.) is intentional, as you are dot-sourcing the functions into your PowerShell session.*
+
+Example:
+
+``` powershell
+    PS C:\Users\EmployeeName\Desktop> . .\Get-ADAuditData.ps1
+```
+
 1. Run function by typing the following command: Get-ADAuditData
+
+Example:
+
+``` powershell
+    PS C:\Users\EmployeeName\Desktop> Get-ADAuditData
+```
+
 1. 'Get-Help Get-ADAuditData' to read the built-in help, if you need to use the built-in parameters.
+
+Example:
+
+``` powershell
+    PS C:\Users\EmployeeName\Desktop> Get-Help Get-ADAuditData
+```
 
 ## Analyzing the data
 
