@@ -18,7 +18,7 @@ Example:
     PS C:\Users\EmployeeName\Desktop> . .\Get-ADAuditData.ps1
 ```
 
-1. Run function by typing the following command: Get-ADAuditData
+4. Run function by typing the following command: Get-ADAuditData
 
 Example:
 
@@ -26,7 +26,7 @@ Example:
     PS C:\Users\EmployeeName\Desktop> Get-ADAuditData
 ```
 
-1. 'Get-Help Get-ADAuditData' to read the built-in help, if you need to use the built-in parameters.
+5. 'Get-Help Get-ADAuditData' to read the built-in help, if you need to use the built-in parameters.
 
 Example:
 
