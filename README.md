@@ -12,7 +12,7 @@ The scripts on this page were compiled by from the work and research of others. 
 1. Import Functions: . .\Get-ADAuditData.ps1
     * *The extra dot (.) is intentional, as you are dot-sourcing the functions into your PowerShell session.*
 
-Example:
+   Example:
 
 ``` powershell
     PS C:\Users\EmployeeName\Desktop> . .\Get-ADAuditData.ps1
@@ -20,7 +20,7 @@ Example:
 
 4. Run function by typing the following command: Get-ADAuditData
 
-Example:
+    Example:
 
 ``` powershell
     PS C:\Users\EmployeeName\Desktop> Get-ADAuditData
@@ -28,7 +28,7 @@ Example:
 
 5. 'Get-Help Get-ADAuditData' to read the built-in help, if you need to use the built-in parameters.
 
-Example:
+    Example:
 
 ``` powershell
     PS C:\Users\EmployeeName\Desktop> Get-Help Get-ADAuditData
