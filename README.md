@@ -9,7 +9,14 @@ The scripts on this page were compiled by from the work and research of others. 
 1. Download the [file](https://github.com/azauditor/ADAudit/raw/master/PowerShell/Get-ADAuditData.ps1) from the ['PowerShell' folder](https://github.com/azauditor/ADAudit/tree/master/PowerShell) in this repository (.zip) or clone the repository
 1. Open PowerShell either directly on server or on a management workstation with RSAT installed.
     * **If running directly on server, you should run from an Administrative PowerShell Prompt (Avoids UAC issues).**
-1. Import Functions: . .\Get-ADAuditData.ps1
+
+    * Use the following command to bring your PowerShell working directory to your Desktop.
+
+``` powershell
+    PS C:\> cd ~\Desktop
+```
+
+3. Import Functions: . .\Get-ADAuditData.ps1
     * *The extra dot (.) is intentional, as you are dot-sourcing the functions into your PowerShell session.*
 
    Example:
