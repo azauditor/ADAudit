@@ -727,4 +727,9 @@ function Get-ADAuditData {
         New-ZipFile -Path "$Path\$domain.zip" -Source "$Path\$domain"
         Write-Verbose -Message "[$(Get-Date -Format G)]  Output Data Compressed to Zip File" -Verbose
     }
+    else {
+        Write-Verbose -Message "[$(Get-Date -Format G)]  Cannot Compress Output Data to Zip File due to insufficient .NET Version" -Verbose
+        Write-Output ".NET framework 4 unavailable - Not compressing output $(Get-Date -Format G)" |
+            Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
+    }
 }
