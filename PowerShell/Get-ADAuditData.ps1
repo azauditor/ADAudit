@@ -284,6 +284,21 @@ function Get-ADAuditData {
     Write-Output "SearchBase parameter: '$SearchBase'`r`n" |
         Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
 
+    #region Export Execution OS Information
+    Write-Verbose -Message "[$(Get-Date -Format G)]  Exporting execution OS Information" -Verbose
+    $PSVersionTable | Out-File -FilePath "$Path\$domain\$env:COMPUTERNAME-sysinfo.txt" -Append -Encoding utf8
+
+    Get-WmiObject -Class Win32_ComputerSystem | Select-Object Name, Model,Manufacturer, Description, DNSHostName,
+    Domain, DomainRole, PartOfDomain, NumberOfProcessors, SystemType, TotalPhysicalMemory, UserName, Workgroup |
+        Out-File -FilePath "$Path\$domain\$env:COMPUTERNAME-sysinfo.txt" -Append -Encoding utf8
+
+    Get-WmiObject -Class Win32_OperatingSystem | Select-Object Name, Version, FreePhysicalMemory,OSLanguage,
+    OSProductSuite, OSType, OSArchitecture, BuildNumber, Caption, InstallDate, LastBootUpTime, LocalDateTime,
+    SystemDrive, WindowsDirectory, SystemDirectory, ServicePackMajorVersion, ServicePackMinorVersion,
+        RegisteredUser | Out-File -FilePath "$Path\$domain\$env:COMPUTERNAME-sysinfo.txt" -Append -Encoding utf8
+    Write-Verbose -Message "[$(Get-Date -Format G)]  Execution OS Information Exported`r`n`r`n" -Verbose
+    #endregion Export Execution OS Information
+
     #region Export Domain Information
     Write-Verbose -Message "[$(Get-Date -Format G)]  Exporting Active Directory Domain Information" -Verbose
     Write-Output "Exporting Active Directory Domain Information $(Get-Date -Format G)" |
