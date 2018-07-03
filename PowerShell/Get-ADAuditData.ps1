@@ -710,6 +710,11 @@ function Get-ADAuditData {
         Write-Warning -Message "[$(Get-Date -Format G)]  Get-ADTrust cmdlet Not Available"
         Write-Output "WARNING: Get-ADTrust Not Available $(Get-Date -Format G)" |
             Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
+        Write-Verbose -Message "[$(Get-Date -Format G)]  Exporting Active Directory Domain Trusts with netdom" -Verbose
+        & netdom query trust > "$Path\$domain\$domain-trustedDomains-netdom.txt"
+        Write-Verbose -Message "[$(Get-Date -Format G)]  Active Directory Domain Trusts Exported with netdom`r`n`r`n" -Verbose
+        Write-Output "$rows Active Directory Domain Trusts Exported via netdom $(Get-Date -Format G)`r`n" |
+            Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
     }
     #endregion Export AD Domain Trusts
 
