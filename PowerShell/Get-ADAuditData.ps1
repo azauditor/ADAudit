@@ -342,7 +342,10 @@ function Get-ADAuditData {
         'PasswordLastSet','PasswordExpired','personalTitle','primaryGroupID','sAMAccountName',
         'seeAlso','servicePrincipalName','sIDHistory','sn','title','uid','uidNumber','userAccountControl',
         'userWorkstations','whenChanged','whenCreated'
-        
+
+    Write-Output "$($Users.Count) Active Directory Users Collected $(Get-Date -Format G)" |
+        Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
+
     $Users | Select-Object 'accountExpirationDate','adminCount','assistant',
             @{Name='canonicalName';Expression={Remove-InvalidFileNameChars($_.canonicalName)}},
             @{Name='cn';Expression={Remove-InvalidFileNameChars($_.cn)}},
@@ -410,7 +413,10 @@ function Get-ADAuditData {
     $Groups = Get-ADGroup -SearchBase $SearchBase -Filter * -Properties 'distinguishedName','sAMAccountName','CN',
         'displayName','name','description','GroupCategory','GroupScope','ManagedBy', 'memberOf','objectSID',
         'msDS-PSOApplied','whenCreated','whenChanged'
-        
+
+    Write-Output "$($Groups.Count) Active Directory Groups Collected $(Get-Date -Format G)" |
+        Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
+
     $Groups | Select-Object 'distinguishedName',
         'sAMAccountName',
         @{Name='CN';Expression={Remove-InvalidFileNameChars($_.CN)}},
@@ -452,7 +458,10 @@ function Get-ADAuditData {
         'distinguishedName','LastLogonDate','name','objectSid','operatingSystem','operatingSystemServicePack',
         'operatingSystemVersion','primaryGroupID','PasswordLastSet','userAccountControl','whenCreated',
         'whenChanged'
-        
+
+    Write-Output "$($Computers.Count) Active Directory Computers Collected $(Get-Date -Format G)" |
+        Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
+
     $Computers | Select-Object 'cn',
         @{Name='description';Expression={Remove-InvalidFileNameChars($_.description)}},
         @{Name='displayName';Expression={Remove-InvalidFileNameChars($_.displayName)}},
