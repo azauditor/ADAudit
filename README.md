@@ -18,6 +18,7 @@ The scripts on this page were compiled by from the work and research of others. 
 
 3. Import Functions: . .\Get-ADAuditData.ps1
     * *The extra dot (.) is intentional, as you are dot-sourcing the functions into your PowerShell session.*
+    * *There is a space between the first dot (.) and the filename (.\Get-ADAuditData.ps1).*
 
    Example:
 
