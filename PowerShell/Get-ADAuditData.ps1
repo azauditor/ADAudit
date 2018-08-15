@@ -99,7 +99,7 @@ function ConvertFrom-UAC {
         $newValue = $uacOptions[$Value]
     }
     else {
-        $newValue = 'Unknown User Account Type'
+        $newValue = 'Unknown User Account Type - ' + $Value
     }
     return $newValue
 }
@@ -122,7 +122,7 @@ function ConvertFrom-UACComputed {
         $newValue = $uacComputed[$Value]
     }
     else {
-        $newValue = 'Unknown User Account Type'
+        $newValue = 'Unknown User Account Type - ' + $Value
     }
     return $newValue
 }
@@ -143,7 +143,7 @@ function ConvertFrom-trustDirection {
         $newValue = $trustDirect[$Value]
     }
     else{
-        $newValue = 'Unknown Trust Direction'
+        $newValue = 'Unknown Trust Direction - ' + $Value
     }
     return $newValue
 }
@@ -164,7 +164,7 @@ function ConvertFrom-trustType {
         $newValue = $trustType[$Value]
     }
     else{
-        $newValue = 'Unknown Trust Type'
+        $newValue = 'Unknown Trust Type - ' + $Value
     }
     return $newValue
 }
@@ -198,7 +198,7 @@ function ConvertFrom-trustAttribute {
         $newValue = $trustAttribute[$Value]
     }
     else{
-        $newValue = 'Unknown Trust Attribute'
+        $newValue = 'Unknown Trust Attribute - ' + $Value
     }
     return $newValue
 }
