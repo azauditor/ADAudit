@@ -24,7 +24,6 @@ others.
     ``` powershell
         PS C:\> cd C:\Users\EmployeeName\Desktop
     ```
-
 1. Run the script: .\Get-ADAuditData.ps1
 
    Example:
@@ -32,7 +31,6 @@ others.
     ``` powershell
         PS C:\Users\EmployeeName\Desktop> .\Get-ADAuditData.ps1
     ```
-
 1. 'Get-Help .\Get-ADAuditData' to read the built-in help, if you need to use
    the built-in parameters.
 
