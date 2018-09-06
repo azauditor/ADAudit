@@ -13,25 +13,25 @@ help determine the actual health of an AD Domain. It is intended for an IT Audit
 well an IT Department is managing specific object types and policies.
 
 .PARAMETER Path
-Specifies the path to output the resultant data. Default is the executing users desktop directory.
+Specifies the path to output the resultant data. Default is the directory where the script file is stored.
 
 .PARAMETER SearchBase
 Specifies an Active Directory path to search under. Default is the default naming context of the current
 domain.
 
 .EXAMPLE
-PS> Get-ADAuditData
+PS> .\Get-ADAuditData
 
 This example will export AD information to a directory in the current working directory. Verbose output
 enabled to visually monitor the script's progress.
 
 .EXAMPLE
-PS> Get-ADAuditData -Path 'C:\ADExtract'
+PS> .\Get-ADAuditData -Path 'C:\ADExtract'
 
 This example will export AD information to the 'C:\ADExtract' directory.
 
 .EXAMPLE
-PS> Get-ADAuditData -SearchBase 'OU=Employees,DC=contoso,DC=com'
+PS> .\Get-ADAuditData -SearchBase 'OU=Employees,DC=contoso,DC=com'
 
 This example will export AD information under the Employees OU of the contoso.com domain. This searchbase must
 be valid in your current domain.
