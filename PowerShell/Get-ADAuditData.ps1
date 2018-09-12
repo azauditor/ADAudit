@@ -405,6 +405,16 @@ $userProps = @('accountExpirationDate','adminCount',
     'seeAlso','servicePrincipalName','sIDHistory','sn','title','uid','uidNumber','userAccountControl',
     'userWorkstations','whenChanged','whenCreated')
 
+$userPropsHeader = @('accountExpirationDate','adminCount',
+    'assistant','canonicalName','cn','comment','company','controlAccessRights','department','departmentNumber',
+    'description','displayName','distinguishedName','division','employeeID','employeeNumber','employeeType',
+    'generationQualifier','givenName','info','LastLogonDate','mail','managedObjects','manager','memberOf',
+    'middleName','msDS-AllowedToDelegateTo','msDS-PSOApplied','msDS-ResultantPSO','msDS-SourceObjectDN',
+    'msDS-User-Account-Control-Computed','msDS-UserPasswordExpiryTimeComputed','name','o','objectSid','ou',
+    'PasswordLastSet','PasswordExpired','personalTitle','primaryGroupID','relativeIdentifier','sAMAccountName',
+    'seeAlso','servicePrincipalName','sIDHistory','sn','title','uid','uidNumber','userAccountControl',
+    'userWorkstations','whenChanged','whenCreated')
+
 $users = Get-ADUser -SearchBase $SearchBase -Filter * -Properties $userProps
 
 Write-Output "$($users.Count) Active Directory Users Collected $(Get-Date -Format G)" |
@@ -414,7 +424,7 @@ $writer = [System.IO.StreamWriter] "$Path\$domain\$domain-Users.csv"
 $delimiter = '|'
 $eol = "`r`n"
 
-$header = ($userProps -join $delimiter) + $eol
+$header = ($userPropsHeader -join $delimiter) + $eol
 $writer.Write($header)
 
 $count = 0
