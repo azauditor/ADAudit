@@ -401,7 +401,7 @@ $userProps = @('accountExpirationDate','adminCount',
     'generationQualifier','givenName','info','LastLogonDate','mail','managedObjects','manager','memberOf',
     'middleName','msDS-AllowedToDelegateTo','msDS-PSOApplied','msDS-ResultantPSO','msDS-SourceObjectDN',
     'msDS-User-Account-Control-Computed','msDS-UserPasswordExpiryTimeComputed','name','o','objectSid','ou',
-    'PasswordLastSet','PasswordExpired','personalTitle','primaryGroupID','sAMAccountName',
+    'PasswordExpired','PasswordLastSet','personalTitle','primaryGroupID','sAMAccountName',
     'seeAlso','servicePrincipalName','sIDHistory','sn','title','uid','uidNumber','userAccountControl',
     'userWorkstations','whenChanged','whenCreated')
 
@@ -411,7 +411,7 @@ $userPropsHeader = @('accountExpirationDate','adminCount',
     'generationQualifier','givenName','info','LastLogonDate','mail','managedObjects','manager','memberOf',
     'middleName','msDS-AllowedToDelegateTo','msDS-PSOApplied','msDS-ResultantPSO','msDS-SourceObjectDN',
     'msDS-User-Account-Control-Computed','msDS-UserPasswordExpiryTimeComputed','name','o','objectSid','ou',
-    'PasswordLastSet','PasswordExpired','personalTitle','primaryGroupID','sAMAccountName','relativeIdentifier',
+    'PasswordExpired','PasswordLastSet','personalTitle','primaryGroupID','relativeIdentifier','sAMAccountName',
     'seeAlso','servicePrincipalName','sIDHistory','sn','title','uid','uidNumber','userAccountControl',
     'userWorkstations','whenChanged','whenCreated')
 
@@ -471,12 +471,12 @@ foreach ($user in $users) {
         ($user.o -join ';') + $delimiter +
         $user.'objectSid' + $delimiter +
         ($user.ou -join ';') + $delimiter +
-        [string]$user.'PasswordLastSet' + $delimiter +
         $user.'PasswordExpired' + $delimiter +
+        [string]$user.'PasswordLastSet' + $delimiter +
         $user.'personalTitle' + $delimiter +
         $user.'primaryGroupID' + $delimiter +
-        $user.'sAMAccountName' + $delimiter +
         (($user.SID.Value).Split('-')[-1]) + $delimiter +
+        $user.'sAMAccountName' + $delimiter +
         ($user.seeAlso -join ';') + $delimiter +
         ($user.servicePrincipalName -join ';') + $delimiter +
         ($user.sIDHistory -join ';') + $delimiter +
