@@ -509,8 +509,12 @@ Write-Verbose -Message "[$(Get-Date -Format G)]  Exporting Active Directory Grou
 Write-Output "Exporting Active Directory Groups $(Get-Date -Format G)" |
     Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
 
-$groupProps = @('distinguishedName','sAMAccountName','CN','displayName','name','description','GroupCategory',
-    'GroupScope','ManagedBy', 'memberOf','objectSID','msDS-PSOApplied','whenCreated','whenChanged')
+$groupProps = @('CN','description','displayName','distinguishedName','GroupCategory','GroupScope','ManagedBy',
+    'memberOf','msDS-PSOApplied','name','objectSID','sAMAccountName','whenCreated','whenChanged')
+
+$groupPropsHeader = @('CN','description','displayName','distinguishedName','GroupCategory','GroupScope',
+    'ManagedBy','memberOf','msDS-PSOApplied','name','objectSID','relativeIdentifier','sAMAccountName',
+    'whenCreated','whenChanged')
 
 $groups = Get-ADGroup -SearchBase $SearchBase -Filter * -Properties $groupProps
 
@@ -519,7 +523,7 @@ Write-Output "$($groups.Count) Active Directory Groups Collected $(Get-Date -For
 
 $writer = [System.IO.StreamWriter] "$Path\$domain\$domain-Groups.csv"
 
-$header = ($groupProps -join $delimiter) + $eol
+$header = ($groupPropsHeader -join $delimiter) + $eol
 $writer.Write($header)
 
 $count = 0
@@ -532,7 +536,7 @@ foreach ($group in $groups) {
         $(Remove-InvalidFileNameChars($group.'displayName')) + $delimiter +
         $group.'distinguishedName' + $delimiter +
         $group.'GroupCategory' + $delimiter +
-        $grou.'GroupScope' + $delimiter +
+        $group.'GroupScope' + $delimiter +
         $group.'ManagedBy' + $delimiter +
         $memberOf + $delimiter +
         (($group.'msDS-PSOApplied' -join (";") -replace ",CN=Password Settings Container,CN=System,$domain" -replace "" ) -replace "CN=" -replace "") + $delimiter +
