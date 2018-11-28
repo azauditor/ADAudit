@@ -347,15 +347,16 @@ Write-Output "SearchBase parameter: '$SearchBase'`r`n" |
 Write-Verbose -Message "[$(Get-Date -Format G)]  Exporting execution OS Information" -Verbose
 $PSVersionTable | Out-File -FilePath "$Path\$domain\$env:COMPUTERNAME-sysinfo.txt" -Append -Encoding utf8
 
-Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object Name, Model,Manufacturer, Description, DNSHostName,
-    Domain, DomainRole, PartOfDomain, NumberOfProcessors, SystemType,
-    @{Name="TotalPhysicalMemoryGB";Expression={[math]::Round($_.TotalPhysicalMemory /1GB)}},
-    UserName, Workgroup |
+Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object 'Description','DNSHostName','Domain','DomainRole',
+    'Manufacturer','Model','Name','NumberOfProcessors','PartOfDomain','SystemType',
+    @{Name='TotalPhysicalMemoryGB';Expression={[math]::Round($_.TotalPhysicalMemory /1GB)}},
+    'UserName','Workgroup' |
     Out-File -FilePath "$Path\$domain\$env:COMPUTERNAME-sysinfo.txt" -Append -Encoding utf8
 
-$sysInfo | Select-Object Name, Version, FreePhysicalMemory, OSLanguage, OSProductSuite, OSType, OSArchitecture,
-    BuildNumber, Caption, InstallDate, LastBootUpTime, LocalDateTime, SystemDrive, WindowsDirectory,
-    SystemDirectory, ServicePackMajorVersion, ServicePackMinorVersion, RegisteredUser |
+$sysInfo | Select-Object 'BuildNumber','Caption','FreePhysicalMemory','InstallDate','LastBootUpTime',
+    'LocalDateTime','Name','nOSLanguage','OSArchitecture','OSProductSuite','OSType','RegisteredUser',
+    'ServicePackMajorVersion','ServicePackMinorVersion','SystemDirectory','SystemDrive','Version',
+    'WindowsDirectory' |
     Out-File -FilePath "$Path\$domain\$env:COMPUTERNAME-sysinfo.txt" -Append -Encoding utf8
 Write-Verbose -Message "[$(Get-Date -Format G)]  Execution OS Information Exported`r`n`r`n" -Verbose
 #endregion Export Execution OS Information
@@ -616,8 +617,8 @@ Write-Verbose -Message "[$(Get-Date -Format G)]  Exporting Active Directory Orga
 Write-Output "Exporting Active Directory Organizational Units $(Get-Date -Format G)" |
     Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
 
-$ouProps = @('DistinguishedName','Name','CanonicalName','DisplayName','Description','whenCreated','whenChanged',
-    'ManagedBy')
+$ouProps = @('CanonicalName','Description','DisplayName','DistinguishedName','ManagedBy','Name','whenChanged',
+    'whenCreated')
 
 $ous = Get-ADOrganizationalUnit -SearchBase $SearchBase -Filter * -Properties $ouProps
 
@@ -795,9 +796,9 @@ Clear-Variable -Name rows -ErrorAction SilentlyContinue
 Write-Verbose -Message "[$(Get-Date -Format G)]  Exporting Active Directory Default Domain Password Policy" -Verbose
 Write-Output "Exporting Active Directory Default Domain Password Policy $(Get-Date -Format G)" |
     Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
-Get-ADDefaultDomainPasswordPolicy | Select-Object -Property PasswordHistoryCount, MaxPasswordAge, MinPasswordAge,
-    MinPasswordLength, ComplexityEnabled, ReversibleEncryptionEnabled, LockoutDuration, LockoutThreshold,
-    LockoutObservationWindow, DistinguishedName |
+Get-ADDefaultDomainPasswordPolicy | Select-Object -Property 'ComplexityEnabled','DistinguishedName',
+    'LockoutDuration','LockoutObservationWindow','LockoutThreshold','MaxPasswordAge','MinPasswordAge',
+    'MinPasswordLength','PasswordHistoryCount','ReversibleEncryptionEnabled' |
     ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', '' } |
     Out-File -FilePath "$Path\$domain\$domain-defaultDomainPasswordPolicy.csv" -Append
 Write-Verbose -Message "[$(Get-Date -Format G)]  Active Directory Default Domain Password Policy Exported`r`n`r`n" -Verbose
@@ -812,11 +813,10 @@ Write-Output "Exporting Active Directory Fine Grained Password Policies $(Get-Da
 Get-ADFineGrainedPasswordPolicy -Filter * -Properties 'appliesTo','ComplexityEnabled','DistinguishedName',
     'LockoutDuration','LockoutObservationWindow','LockoutThreshold','MaxPasswordAge','MinPasswordAge',
     'MinPasswordLength','Name','PasswordHistoryCount','Precedence','ReversibleEncryptionEnabled' |
-    Select-Object 'DistinguishedName','Name',
+    Select-Object 'ComplexityEnabled','DistinguishedName','LockoutDuration','LockoutObservationWindow',
+        'LockoutThreshold','MaxPasswordAge','MinPasswordAge','MinPasswordLength',
         @{Name='msDS-PSOAppliesTo';Expression={(($_.appliesTo -split (",") | Select-String -AllMatches "CN=") -join ", ") -replace "CN=" -replace "" }},
-        'PasswordHistoryCount','MaxPasswordAge','MinPasswordAge','MinPasswordLength','ComplexityEnabled',
-        'ReversibleEncryptionEnabled','LockoutDuration','LockoutThreshold','LockoutObservationWindow',
-        'Precedence' |
+        'Name','PasswordHistoryCount','Precedence','ReversibleEncryptionEnabled' |
     ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', '' } |
     Out-File -FilePath "$Path\$domain\$domain-fgppDetails.csv" -Append
 
