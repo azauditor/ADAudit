@@ -15,8 +15,7 @@ others.
 1. Download the
    [script](https://github.com/azauditor/ADAudit/raw/master/PowerShell/Get-ADAuditData.ps1)
    (right-click "script" and choose 'Save As') from the repository.
-   Alternatively, use 'Clone or download' -> 'Download ZIP' to download the
-   entire repository into a zip file.
+   Alternatively, [download a zip file](https://github.com/azauditor/ADAudit/archive/master.zip) to of the entire repository into a zip file.
 2. Open PowerShell either directly on server or on a management workstation with
    RSAT installed.
     - **If running directly on server, you should run from an Administrative
