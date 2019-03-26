@@ -12,8 +12,12 @@ others.
 
 ## Querying an Active Directory Domain
 
-1. Download the [file](https://github.com/azauditor/ADAudit/raw/master/PowerShell/Get-ADAuditData.ps1) (right-click 'Save As') from the ['PowerShell' folder](https://github.com/azauditor/ADAudit/tree/master/PowerShell) in this repository
-1. Open PowerShell either directly on server or on a management workstation with
+1. Download the
+   [script](https://github.com/azauditor/ADAudit/raw/master/PowerShell/Get-ADAuditData.ps1)
+   (right-click "script" and choose 'Save As') from the repository.
+   Alternatively, use 'Clone or download' -> 'Download ZIP' to download the
+   entire repository into a zip file.
+2. Open PowerShell either directly on server or on a management workstation with
    RSAT installed.
     - **If running directly on server, you should run from an Administrative
       PowerShell Prompt (Avoids UAC issues).**
@@ -24,14 +28,14 @@ others.
     ``` powershell
         PS C:\> cd C:\Users\EmployeeName\Desktop
     ```
-1. Run the script: .\Get-ADAuditData.ps1
+3. Run the script: .\Get-ADAuditData.ps1
 
    Example:
 
     ``` powershell
         PS C:\Users\EmployeeName\Desktop> .\Get-ADAuditData.ps1
     ```
-1. 'Get-Help .\Get-ADAuditData' to read the built-in help, if you need to use
+4. 'Get-Help .\Get-ADAuditData' to read the built-in help, if you need to use
    the built-in parameters.
 
     Example:
