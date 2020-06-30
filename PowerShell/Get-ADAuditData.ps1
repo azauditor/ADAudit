@@ -83,7 +83,7 @@ Function Remove-InvalidFileNameChars {
 
 function ConvertFrom-UAC {
     param (
-        [Parameter(Mandatory=$True, Position=0, ValueFromPipeline=$true)]
+        [Parameter(Mandatory=$false, Position=0, ValueFromPipeline=$true)]
         $Value
     )
     $uacOptions = @{
@@ -148,18 +148,23 @@ function ConvertFrom-UAC {
         83890176 = 'Enabled - Server Trust Account - Trusted For Delegation - (Read-Only Domain Controller (RODC))'
     }
 
-    if ($uacOptions.ContainsKey($Value)) {
-        [string]$newValue = $uacOptions[$Value]
+    if ($Value) {
+        if ($uacOptions.ContainsKey($Value)) {
+            [string]$newValue = $uacOptions[$Value]
+        }
+        else {
+            [string]$newValue = "Unknown User Account Type - $Value"
+        }
     }
     else {
-        $newValue = "Unknown User Account Type - $Value"
+        [string]$newValue = "Unknown User Account Type - No Value Available"
     }
     return $newValue
 }
 
 function ConvertFrom-UACComputed {
     param(
-        [Parameter(Mandatory=$True, Position=0, ValueFromPipeline=$true)]
+        [Parameter(Mandatory=$false, Position=0, ValueFromPipeline=$true)]
         $Value
     )
     $uacComputed = @{
@@ -171,32 +176,43 @@ function ConvertFrom-UACComputed {
         2147483648 = 'Use AES Keys'
     }
 
-    if ($uacComputed.ContainsKey($Value)) {
-        [string]$newValue = $uacComputed[$Value]
+
+    if($Value) {
+        if ($uacComputed.ContainsKey($Value)) {
+            [string]$newValue = $uacComputed[$Value]
+        }
+        else {
+            [string]$newValue = "Unknown User Account Type - $Value"
+        }
     }
     else {
-        $newValue = "Unknown User Account Type - $Value"
+        [string]$newValue = "Unknown User Account Type - No Value Available"
     }
     return $newValue
 }
 
 function ConvertFrom-PasswordExpiration {
     param (
-        [Parameter(Mandatory=$True, Position=0, ValueFromPipeline=$true)]
+        [Parameter(Mandatory=$false, Position=0, ValueFromPipeline=$true)]
         $Value
     )
-    if ($Value -eq 0 -or $Value -ge 922337203685477000) {
-        [string]$newValue = ''
+    if ($Value) {
+        if ($Value -eq 0 -or $Value -ge 922337203685477000) {
+            [string]$newValue = ''
+        }
+        else {
+            [string]$newValue = (([datetime]::FromFileTime($user.'msDS-UserPasswordExpiryTimeComputed')).ToString("M/d/yyyy h:mm:ss tt"))
+        }
     }
     else {
-        [string]$newValue = (([datetime]::FromFileTime($user.'msDS-UserPasswordExpiryTimeComputed')).ToString("M/d/yyyy h:mm:ss tt"))
+        [string]$newValue = ''
     }
     return $newValue
 }
 
 function ConvertFrom-trustDirection {
     param(
-        [Parameter(Mandatory=$True, Position=0, ValueFromPipeline=$true)]
+        [Parameter(Mandatory=$false, Position=0, ValueFromPipeline=$true)]
         $Value
     )
     $trustDirect = @{
@@ -211,18 +227,23 @@ function ConvertFrom-trustDirection {
              'domain or forest.')
     }
 
-    if ($trustDirect.ContainsKey($Value)) {
-        $newValue = $trustDirect[$Value]
+    if ($Value) {
+        if ($trustDirect.ContainsKey($Value)) {
+            $newValue = $trustDirect[$Value]
+        }
+        else{
+            $newValue = "Unknown Trust Direction - $Value"
+        }
     }
-    else{
-        $newValue = "Unknown Trust Direction - $Value"
+    else {
+        $newValue = "Unknown Trust Direction - No Value Available"
     }
     return $newValue
 }
 
 function ConvertFrom-trustType {
     param(
-        [Parameter(Mandatory=$True, Position=0, ValueFromPipeline=$true)]
+        [Parameter(Mandatory=$false, Position=0, ValueFromPipeline=$true)]
         $Value
     )
     $trustType = @{
@@ -234,11 +255,16 @@ function ConvertFrom-trustType {
              'specification. This trust type is mainly theoretical)')
     }
 
-    if ($trustType.ContainsKey($Value)) {
-        [string]$newValue = $trustType[$Value]
+    if ($Value) {
+        if ($trustType.ContainsKey($Value)) {
+            [string]$newValue = $trustType[$Value]
+        }
+        else {
+            $newValue = "Unknown Trust Type - $Value"
+        }
     }
-    else{
-        $newValue = "Unknown Trust Type - $Value"
+    else {
+        $newValue = "Unknown Trust Type - No Value Available"
     }
     return $newValue
 }
@@ -268,11 +294,16 @@ function ConvertFrom-trustAttribute {
         80000 = 'Tree Root (Obsolete)'
     }
 
-    if ($trustAttribute.ContainsKey($Value)) {
-        [string]$newValue = $trustAttribute[$Value]
+    if ($Value) {
+        if ($trustAttribute.ContainsKey($Value)) {
+            [string]$newValue = $trustAttribute[$Value]
+        }
+        else{
+            $newValue = "Unknown Trust Attribute - $Value"
+        }
     }
-    else{
-        $newValue = "Unknown Trust Attribute - $Value"
+    else {
+        $newValue = "Unknown Trust Attribute - No Value Available"
     }
     return $newValue
 }
