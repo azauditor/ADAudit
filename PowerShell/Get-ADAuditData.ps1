@@ -524,8 +524,8 @@ foreach ($user in $users) {
         (($user.'msDS-PSOApplied' -join (";") -replace ",CN=Password Settings Container,CN=System,$domain" -replace "" ) -replace "CN=" -replace "") + $delimiter +
         (($user.'msDS-ResultantPSO' -join (";") -replace ",CN=Password Settings Container,CN=System,$domain" -replace "" ) -replace "CN=" -replace "") + $delimiter +
         $user.'msDS-SourceObjectDN' + $delimiter +
-        (ConvertFrom-UACComputed($user.'msDS-User-Account-Control-Computed')) + $delimiter +
-        (ConvertFrom-PasswordExpiration($user.'msDS-UserPasswordExpiryTimeComputed')) + $delimiter +
+        $(ConvertFrom-UACComputed($user.'msDS-User-Account-Control-Computed')) + $delimiter +
+        $(ConvertFrom-PasswordExpiration($user.'msDS-UserPasswordExpiryTimeComputed')) + $delimiter +
         $(Remove-InvalidFileNameChars($user.name)) + $delimiter +
         ($user.o -join ';') + $delimiter +
         $user.'objectSid' + $delimiter +
@@ -543,7 +543,7 @@ foreach ($user in $users) {
         $user.'title' + $delimiter +
         ($user.uid -join ';') + $delimiter +
         $user.'uidNumber' + $delimiter +
-        (ConvertFrom-UAC($user.userAccountControl)) + $delimiter +
+        $(ConvertFrom-UAC($user.userAccountControl)) + $delimiter +
         $user.'userWorkstations' + $delimiter +
         [string]$user.'whenChanged' + $delimiter +
         [string]$user.'whenCreated' + $eol
