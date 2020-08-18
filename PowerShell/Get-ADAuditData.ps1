@@ -148,7 +148,7 @@ function ConvertFrom-UAC {
         83890176 = 'Enabled - Server Trust Account - Trusted For Delegation - (Read-Only Domain Controller (RODC))'
     }
 
-    if ($Value) {
+    if ($null -ne $Value) {
         if ($uacOptions.ContainsKey($Value)) {
             [string]$newValue = $uacOptions[$Value]
         }
@@ -177,7 +177,7 @@ function ConvertFrom-UACComputed {
     }
 
 
-    if($Value) {
+    if ($null -ne $Value) {
         if ($uacComputed.ContainsKey($Value)) {
             [string]$newValue = $uacComputed[$Value]
         }
@@ -196,7 +196,7 @@ function ConvertFrom-PasswordExpiration {
         [Parameter(Mandatory=$false, Position=0, ValueFromPipeline=$true)]
         $Value
     )
-    if ($Value) {
+    if ($null -ne $Value) {
         if ($Value -eq 0 -or $Value -ge 922337203685477000) {
             [string]$newValue = ''
         }
@@ -227,7 +227,7 @@ function ConvertFrom-trustDirection {
              'domain or forest.')
     }
 
-    if ($Value) {
+    if ($null -ne $Value) {
         if ($trustDirect.ContainsKey($Value)) {
             $newValue = $trustDirect[$Value]
         }
@@ -255,7 +255,7 @@ function ConvertFrom-trustType {
              'specification. This trust type is mainly theoretical)')
     }
 
-    if ($Value) {
+    if ($null -ne $Value) {
         if ($trustType.ContainsKey($Value)) {
             [string]$newValue = $trustType[$Value]
         }
@@ -294,7 +294,7 @@ function ConvertFrom-trustAttribute {
         80000 = 'Tree Root (Obsolete)'
     }
 
-    if ($Value) {
+    if ($null -ne $Value) {
         if ($trustAttribute.ContainsKey($Value)) {
             [string]$newValue = $trustAttribute[$Value]
         }
