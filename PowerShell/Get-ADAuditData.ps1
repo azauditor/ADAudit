@@ -340,14 +340,22 @@ catch {
             "<https://www.microsoft.com/en-us/download/details.aspx?id=2852> for the files to install ADWS.")
     }
     if ($sysInfo.ProductType -eq 2) {
-        Write-Warning -Message ("Due to UAC restrictions, you may need to run PowerShell as admin ('Run As " +
-            "Administrator'), before launching the script.")
         Write-Warning -Message ("Ensure that the domain controller is running Active Directory Web Services " +
             "(ADWS). If your DC is running Server 2003 or 2008, refer to " +
             "<https://www.microsoft.com/en-us/download/details.aspx?id=2852> for the files to install ADWS.")
     }
     $null = Read-Host 'Press enter to continue...'
     break
+}
+
+if ($sysInfo.ProductType -eq 2) {
+    if (-not (([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))) {
+        Write-Warning -Message ("Running script directly on domain controller without running PowerShell as admin.")
+        Write-Warning -Message ("Due to UAC restrictions, you may need to run PowerShell as admin ('Run As " +
+            "Administrator'), before launching the script.")
+        $null = Read-Host 'Press enter to continue...'
+        break
+    }
 }
 #endregion Check system compatibility
 
