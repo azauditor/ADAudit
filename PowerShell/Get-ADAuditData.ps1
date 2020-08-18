@@ -356,6 +356,9 @@ if ($sysInfo.ProductType -eq 2) {
         $null = Read-Host 'Press enter to continue...'
         break
     }
+    Write-Warning -Message ("It is strongly recommended that you run this script from an administrative " +
+    "workstation or jump box member server with RSAT tools, instead of running directly on a domain " +
+    "controller.")
 }
 #endregion Check system compatibility
 
