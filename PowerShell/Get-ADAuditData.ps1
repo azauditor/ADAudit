@@ -415,6 +415,22 @@ Write-Output "Active Directory Domain Information Exported $(Get-Date -Format G)
     Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
 #endregion Export Domain Information
 
+#region Export Domain Controller Information
+$dcInfo = Get-ADDomainController -Filter * -Server $($domainInfo.DnsRoot)
+Write-Verbose -Message "[$(Get-Date -Format G)]  Exporting Active Directory Domain Controller Information" -Verbose
+Write-Output "Exporting Active Directory Domain Controller Information $(Get-Date -Format G)" |
+    Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
+$dcInfo | Select-Object 'ComputerObjectDN','DefaultPartition','Domain','Enabled','Forest','HostName',
+        'IsGlobalCatalog','IsReadOnly','Name','OperatingSystem','OperatingSystemVersion',
+        @{Name='OperationMasterRoles';Expression={$_.'OperationMasterRoles' -join ';'}},'ServerObjectDN',
+        'ServerObjectGuid','Site' |
+    ConvertTo-Csv -Delimiter '|' -NoTypeInformation | ForEach-Object { $_ -replace '"', ''} |
+    Out-File -FilePath "$Path\$domain\$domain-domainControllerInfo.csv" -Append
+Write-Verbose -Message "[$(Get-Date -Format G)]  Active Directory Domain Controller Information Exported`r`n`r`n" -Verbose
+Write-Output "Active Directory Domain Controller Information Exported $(Get-Date -Format G)`r`n" |
+    Out-File -FilePath "$Path\$domain\consoleOutput.txt" -Append -Encoding utf8
+#endregion Export Domain Controller Information
+
 #region Export Forest Information
 Write-Verbose -Message "[$(Get-Date -Format G)]  Exporting Active Directory Forest Information" -Verbose
 Write-Output "Exporting Active Directory Forest Information $(Get-Date -Format G)" |
