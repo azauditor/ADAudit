@@ -13,9 +13,9 @@ others.
 ## Querying an Active Directory Domain
 
 1. Download the
-   [script](https://github.com/azauditor/ADAudit/raw/master/PowerShell/Get-ADAuditData.ps1)
+   [script](https://github.com/azauditor/ADAudit/raw/main/PowerShell/Get-ADAuditData.ps1)
    (right-click "script" and choose 'Save As') from the repository.
-   Alternatively, [download a zip file](https://github.com/azauditor/ADAudit/archive/master.zip) to of the entire repository into a zip file.
+   Alternatively, [download a zip file](https://github.com/azauditor/ADAudit/archive/refs/heads/main.zip) to of the entire repository.
 2. Open PowerShell either directly on server or on a management workstation with
    RSAT installed.
     - **If running directly on server, you should run from an Administrative
@@ -52,7 +52,7 @@ queries. The files can be imported quickly, run against a standard, but flexible
 set of queries, and can be compared to other relevant data sets.
 
 A [.sql
-file](https://github.com/azauditor/ADAudit/blob/master/SQL/SampleQueries.sql)
+file](https://github.com/azauditor/ADAudit/blob/main/SQL/SampleQueries.sql)
 containing sample queries has been uploaded to this repository to show standard
 checks run by the Arizona Auditor General. These checks are not an exhaustive
 list of everything that can be reviewed in an Active Directory domain, nor are
