@@ -142,6 +142,7 @@ function ConvertFrom-UAC {
         1114624  = 'Enabled - Password Does Not Expire - Not Delegated'
         1114626  = 'Disabled - Password Does Not Expire - Not Delegated'
         1114656  = 'Enabled - Password Not Required - Password Does Not Expire - Not Delegated'
+        1311232  = 'Enabled - Smartcard Required - Not Delegated'
         2097664  = 'Enabled - Use DES Key Only'
         2163200  = 'Enabled - Password Does Not Expire - Use DES Key Only'
         2687488  = 'Enabled - Password Does Not Expire - Trusted For Delegation - Use DES Key Only'
